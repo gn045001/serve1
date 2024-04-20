@@ -21,7 +21,7 @@ used=admin
 pass=gn045001
 
 # line 的相關變數
-TOKEN="lbz6wRQ4qvbPQIPDQHTEiCMF2THiArWr8Utvjy0ZWG2"
+#TOKEN="lbz6wRQ4qvbPQIPDQHTEiCMF2THiArWr8Utvjy0ZWG2"
 
 # 硬碟空間告警設定變數
 disk_space=1073741824
