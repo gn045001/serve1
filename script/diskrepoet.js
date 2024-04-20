@@ -1,16 +1,24 @@
 // version: 0.1, date: 20240414, Creator: jiasian.lin
 const ejs = require('ejs');
 const fs = require('fs');
-
-// 獲取時間到小時
+// 獲取時間
 const currentDate = new Date();
 const formattedDate = currentDate.toISOString().slice(0, 13).replace(/[-T:]/g, '');
+const year = currentDate.getFullYear();
+// 讀取月份並設定為兩位數
+const month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
+
+// 讀取日期並設定為兩位數
+const day = String(currentDate.getDate()).padStart(2, '0'); 
+// 讀取小時並設定為兩位數
+const hour = String(currentDate.getHours()).padStart(2, '0'); 
+const currentDateTime = `${year}${month}${day}-${hour}`;
 
 // 輸出Html的資料
-const fileName = `report/${formattedDate}_diskoutput.html`;
+const fileName = `report/${formattedDate}_Diskoutput.html`;
 
 // 讀取raw的JSON 文件的内容
-fs.readFile('raw/DiskSpace.json', 'utf8', (err, data) => {
+fs.readFile(`raw/${currentDateTime}-DiskSpace.json`, 'utf8', (err, data)=> {
     if (err) {
         console.error('File exists? Confirm if the file exists at the provided path.', err);
         return;
@@ -19,9 +27,10 @@ fs.readFile('raw/DiskSpace.json', 'utf8', (err, data) => {
     console.log('解讀數據：', dictionaries);
 
     // 生成 HTML
-    const template = fs.readFileSync('script/template.ejs', 'utf8');
+    const template = fs.readFileSync('nodejs/template.ejs', 'utf8');
     const renderedHtml = ejs.render(template, { dictionaries: dictionaries });
     console.log(renderedHtml);
+
 
     // 當按輸出report至小時
     fs.writeFile(fileName, renderedHtml, (err) => {

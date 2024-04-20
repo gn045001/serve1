@@ -3,6 +3,18 @@ const mongoose = require('mongoose');
 // 讀取檔案
 const fs = require('fs');
 
+// 獲取時間
+const currentDate = new Date();
+const year = currentDate.getFullYear();
+// 讀取月份並設定為兩位數
+const month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
+
+// 讀取日期並設定為兩位數
+const day = String(currentDate.getDate()).padStart(2, '0'); 
+// 讀取小時並設定為兩位數
+const hour = String(currentDate.getHours()).padStart(2, '0'); 
+const currentDateTime = `${year}${month}${day}-${hour}`;
+
 // 連接 MongoDB 數據庫
 mongoose.connect('mongodb://admin:gn045001@localhost:27017/');
 //建立DB功能
@@ -23,7 +35,7 @@ const containerDataSchema = new mongoose.Schema({
 const ContainerData = mongoose.model('CPUstats', containerDataSchema);
 
 // 讀取並處理 JSON 數據
-fs.readFile('raw/ComputerStart.json', 'utf8', async (err, data) => {
+fs.readFile(`raw/${currentDateTime}-ComputerStart.json`, 'utf8', async (err, data) => {
     if (err) {
         console.error('File exists? Confirm if the file exists at the provided path.', err);
         return;

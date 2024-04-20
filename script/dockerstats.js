@@ -1,4 +1,6 @@
 //version: 0.1, date: 20240413, Creater: jiasian.lin
+//version: 0.1, date: 20240420, Creater: jiasian.lin
+//新增 日期變數
 //section 1:description 程式變數
 const fs = require('fs');
 const axios = require('axios');
@@ -11,7 +13,21 @@ const Summerlog = 'log/Summer.log'
 const accessToken = 'lbz6wRQ4qvbPQIPDQHTEiCMF2THiArWr8Utvjy0ZWG2';
 // Line Notify API 端點
 const url = 'https://notify-api.line.me/api/notify';
-// 設定 HTTP 請求標頭
+
+//時間變數
+const now = new Date();
+const year = now.getFullYear();
+
+// 讀取月份並設定為兩位數
+const month = String(now.getMonth() + 1).padStart(2, '0'); 
+
+// 讀取日期並設定為兩位數
+const day = String(now.getDate()).padStart(2, '0'); 
+
+// 讀取小時並設定為兩位數
+const hour = String(now.getHours()).padStart(2, '0'); 
+const currentDateTime = `${year}${month}${day}-${hour}`;
+// 設定 Line Notify
 const config = {
     headers: {
     'Authorization': `Bearer ${accessToken}`,
@@ -20,11 +36,13 @@ const config = {
 };
 
 //section 2:description 讀取 JSON 文件的內容
-fs.readFile('raw/ComputerStart.json', 'utf8', (err, data) => {
+
+fs.readFile(`raw/${currentDateTime}-ComputerStart.json`, 'utf8', (err, data) => {
     if (err) {
         console.error('File exists? Confirm if the file exists at the provided path.', err);
         return;
     }
+
 const dictionaries = data.trim().split('\n').map(line => JSON.parse(line));
 console.log('解析後的陣列：', dictionaries);
 dictionaries.forEach(dict => {
@@ -51,13 +69,13 @@ fs.appendFile(Summerlog, '開始執行確認CPU狀況寫入log日誌已成功寫
         });
 
     // 發送 POST 請求到 Line Notify API
-		axios.post(url,CPUmessages, config)
-    		.then(response => {
-        	console.log('訊息發送成功:', response.data);
-    	    })
-    		.catch(error => {
-        	console.error('訊息發送失敗:', error.response.data);
-    	    });	
+//		axios.post(url,CPUmessages, config)
+//    		.then(response => {
+//        	console.log('訊息發送成功:', response.data);
+//    	    })
+//    		.catch(error => {
+//        	console.error('訊息發送失敗:', error.response.data);
+//    	    });	
 	// docker stats CPU狀態使用率，寫進StatusError log日誌
         fs.appendFile(notebookPathError, CPUMessagelog+ '\n', (err) => {
             if (err) {
@@ -75,14 +93,14 @@ fs.appendFile(Summerlog, '開始執行確認CPU狀況寫入log日誌已成功寫
             message: CPUMessagelog2
         });
 
-    // 發送 POST 請求到 Line Notify API
-		axios.post(url,CPUmessages2, config)
-    		.then(response => {
-        	console.log('訊息發送成功:', response.data);
-    	    })
-    		.catch(error => {
-        	console.error('訊息發送失敗:', error.response.data);
-    	    });		
+// 發送 POST 請求到 Line Notify API
+//		axios.post(url,CPUmessages2, config)
+//    		.then(response => {
+//       	console.log('訊息發送成功:', response.data);
+//    	    })
+//    		.catch(error => {
+//        	console.error('訊息發送失敗:', error.response.data);
+//    	    });		
     // docker stats CPU狀態使用率，寫進StatusError log日誌
             fs.appendFile(notebookPathError, CPUMessagelog2+ '\n', (err) => {
                 if (err) {
@@ -100,13 +118,13 @@ fs.appendFile(Summerlog, '開始執行確認CPU狀況寫入log日誌已成功寫
                 });
         
     // 發送 POST 請求到 Line Notify API
-                axios.post(url,CPUmessages3, config)
-                    .then(response => {
-                    console.log('訊息發送成功:', response.data);
-                    })
-                    .catch(error => {
-                    console.error('訊息發送失敗:', error.response.data);
-                    });	
+//                axios.post(url,CPUmessages3, config) 
+//                   .then(response => {
+//                 console.log('訊息發送成功:', response.data);
+//                    })
+//                    .catch(error => {
+//                    console.error('訊息發送失敗:', error.response.data);
+//                    });	
     // docker stats CPU狀態使用率，寫進StatusError log日誌        
                 fs.appendFile(notebookPathError, CPUMessagelog3+ '\n', (err) => {
                     if (err) {
@@ -125,13 +143,13 @@ fs.appendFile(Summerlog, '開始執行確認CPU狀況寫入log日誌已成功寫
                 });
         
     // 發送 POST 請求到 Line Notify API
-                axios.post(url,CPUmessages4, config)
-                    .then(response => {
-                    console.log('訊息發送成功:', response.data);
-                    })
-                    .catch(error => {
-                    console.error('訊息發送失敗:', error.response.data);
-                    });	
+//                axios.post(url,CPUmessages4, config) 
+//                   .then(response => {
+//                 console.log('訊息發送成功:', response.data);
+//                    })
+//                    .catch(error => {
+//                    console.error('訊息發送失敗:', error.response.data);
+//                    });	
 	// docker stats CPU狀態使用率，寫進StatusError log日誌
                 fs.appendFile(notebookPathError, CPUMessagelog4+ '\n', (err) => {
                     if (err) {
@@ -188,13 +206,13 @@ fs.appendFile(Summerlog, '開始執行確認CPU狀況寫入log日誌已成功寫
                 });
             
                 // 發送 POST 請求到 Line Notify API
-                    axios.post(url,memorymessages, config)
-                        .then(response => {
-                        console.log('訊息發送成功:', response.data);
-                        })
-                        .catch(error => {
-                        console.error('訊息發送失敗:', error.response.data);
-                        });	
+//                    axios.post(url,memorymessages, config)
+//                        .then(response => {
+//                        console.log('訊息發送成功:', response.data);
+//                        })
+//                        .catch(error => {
+//                        console.error('訊息發送失敗:', error.response.data);
+//                        });	
                  // docker stats CPU狀態使用率，寫進StatusError log日誌
                     fs.appendFile(notebookPathError, memoryMessagelog+ '\n', (err) => {
                         if (err) {
@@ -212,13 +230,13 @@ fs.appendFile(Summerlog, '開始執行確認CPU狀況寫入log日誌已成功寫
                     });
             
                 // 發送 POST 請求到 Line Notify API
-                    axios.post(url,memorymessages2, config)
-                        .then(response => {
-                        console.log('訊息發送成功:', response.data);
-                        })
-                        .catch(error => {
-                        console.error('訊息發送失敗:', error.response.data);
-                        });		
+//                    axios.post(url,memorymessages2, config)
+ //                       .then(response => {
+ //                       console.log('訊息發送成功:', response.data);
+ //                       })
+ //                       .catch(error => {
+ //                       console.error('訊息發送失敗:', error.response.data);
+ //                       });		
                 // docker stats CPU狀態使用率，寫進StatusError log日誌 
                         fs.appendFile(notebookPathError, memoryMessagelog2+ '\n', (err) => {
                             if (err) {
@@ -237,13 +255,13 @@ fs.appendFile(Summerlog, '開始執行確認CPU狀況寫入log日誌已成功寫
                             });
                     
                 // 發送 POST 請求到 Line Notify API
-                            axios.post(url,memorymessages3, config)
-                                .then(response => {
-                                console.log('訊息發送成功:', response.data);
-                                })
-                                .catch(error => {
-                                console.error('訊息發送失敗:', error.response.data);
-                                });	
+//                            axios.post(url,memorymessages3, config)
+//                                .then(response => {
+ //                               console.log('訊息發送成功:', response.data);
+ //                               })
+//                                .catch(error => {
+ //                               console.error('訊息發送失敗:', error.response.data);
+//                                });	
                 // docker stats CPU狀態使用率，寫進StatusError log日誌    
                             fs.appendFile(notebookPathError, memoryMessagelog3+ '\n', (err) => {
                                 if (err) {
@@ -262,13 +280,13 @@ fs.appendFile(Summerlog, '開始執行確認CPU狀況寫入log日誌已成功寫
                             });
                     
                 // 發送 POST 請求到 Line Notify API
-                            axios.post(url,memorymessages4, config)
-                                .then(response => {
-                                console.log('訊息發送成功:', response.data);
-                                })
-                                .catch(error => {
-                                console.error('訊息發送失敗:', error.response.data);
-                                });	
+//                            axios.post(url,memorymessages4, config)
+//                                .then(response => {
+//                                console.log('訊息發送成功:', response.data);
+//                                })
+//                                .catch(error => {
+//                               console.error('訊息發送失敗:', error.response.data);
+//                                });	
                 // docker stats CPU狀態使用率，寫進StatusError log日誌
                             fs.appendFile(notebookPathError, memoryMessagelog4+ '\n', (err) => {
                                 if (err) {
@@ -317,8 +335,3 @@ fs.appendFile(Summerlog, '開始執行確認CPU狀況寫入log日誌已成功寫
         });
     });
 });
-
-
-
-
-
