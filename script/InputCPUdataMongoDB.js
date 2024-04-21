@@ -16,10 +16,12 @@ const hour = String(currentDate.getHours()).padStart(2, '0');
 const currentDateTime = `${year}${month}${day}-${hour}`;
 
 // 連接 MongoDB 數據庫
-mongoose.connect('mongodb://admin:gn045001@localhost:27017/');
+mongoose.connect('mongodb://admin:gn045001@192.168.50.115:27017/');
 //建立DB功能
 const db = mongoose.connection;
+//當連線有問題時
 db.on('error', console.error.bind(console, 'connection error:'));
+//如果成功會回復onnected to MongoDB
 db.once('open', function() {
     console.log('Connected to MongoDB');
 });
@@ -31,7 +33,7 @@ const containerDataSchema = new mongoose.Schema({
     container_name: String,
     cpu_percentage: String,
 });
-
+//數據加入至MongoDB中
 const ContainerData = mongoose.model('CPUstats', containerDataSchema);
 
 // 讀取並處理 JSON 數據

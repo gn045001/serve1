@@ -1,7 +1,10 @@
 // version: 0.1, date: 20240414, Creator: jiasian.lin
+// version: 0.2, date: 20240420, Creator: jiasian.lin
+//引入 ejs 模組，用於在 Node.js 中生成 HTML 模板
 const ejs = require('ejs');
+// 載入 fs 模組用於讀取檔案
 const fs = require('fs');
-// 獲取時間到小時
+// 獲取時間
 const currentDate = new Date();
 const formattedDate = currentDate.toISOString().slice(0, 13).replace(/[-T:]/g, '');
 const year = currentDate.getFullYear();
@@ -17,7 +20,7 @@ const hour = String(currentDate.getHours()).padStart(2, '0');
 const currentDateTime = `${year}${month}${day}-${hour}`;
 
 //輸出Html的資料
-const fileName = `report/${formattedDate}_CPU_report.html`;
+const fileName = `report/${formattedDate}_output.html`;
 
 // 讀取raw的JSON 文件的内容
 fs.readFile(`raw/${currentDateTime}-ComputerStart.json`, 'utf8', (err, data) => {
@@ -26,7 +29,7 @@ fs.readFile(`raw/${currentDateTime}-ComputerStart.json`, 'utf8', (err, data) => 
         return;
     }
     const dictionaries = data.trim().split('\n').map(line => JSON.parse(line));
-    //console.log('解讀數據：', dictionaries);
+    console.log('解讀數據：', dictionaries);
     
     // 生成 HTML
     const template = `
@@ -62,35 +65,66 @@ fs.readFile(`raw/${currentDateTime}-ComputerStart.json`, 'utf8', (err, data) => 
     </head>
     <body>
         <div class="center">
-        <h1>Container Execution CPU 大於 50%須注意 </h1>
-        <table id="CPUTable" border="1">
+        <h1>Container Execution Status</h1>
+        <table id="Table" border="1">
             <thead>
                 <tr>
                     <th>Timestamp</th>
+                    <th>Container ID</th>
                     <th>Container Name</th>
-                    <th>CPU Percentage %</th>
+                    <th>CPU Percentage</th>
+                    <th>Memory Usage</th>
+                    <th>Memory Percentage</th>
+                    <th>Network IO</th>
+                    <th>Block IO</th>
                 </tr>
             </thead>
             <tbody>
                 <% dictionaries.forEach(container => { %>
-                    <% if (parseFloat(container.cpu_percentage) > 50) { %>
-                        <tr>
-                            <td><%= container.timestamp %></td>
-                            <td><%= container.container_name %></td>
-                            <td><%= container.cpu_percentage %></td>
-                        </tr>
-                    <% } %>
-                <% }) %>        
+                <tr>
+                    <td><%= container.timestamp %></td>
+                    <td><%= container.container_id %></td>
+                    <td><%= container.container_name %></td>
+                    <td><%= container.cpu_percentage %></td>
+                    <td><%= container.memory_usage %></td>
+                    <td><%= container.memory_percentage %></td>
+                    <td><%= container.network_io %></td>
+                    <td><%= container.block_io %></td>
+                </tr>
+                <% }) %>
             </tbody>
-        </table>      
+        </table>
+        <h1>Container Execution CPU Memory 狀態 </h1>
+        <table id="displayTable" border="1">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Container Name</th>
+                    <th>CPU Percentage</th>
+                    <th>Memory Usage</th>
+                    <th>Memory Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% dictionaries.forEach(container => { %>
+                <tr>
+                    <td><%= container.timestamp %></td>
+                    <td><%= container.container_name %></td>
+                    <td><%= container.cpu_percentage %></td>
+                    <td><%= container.memory_usage %></td>
+                    <td><%= container.memory_percentage %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table> 
         </div>
     </body>
     </html>
     `;
-    // 使用 ejs 模組的 render 函數將模板(template)與數據({ dictionaries: dictionaries })合併生成 HTML 字符串
+    // 使用 ejs 模組中的 render 函數來進行生成 HTML
     const renderedHtml = ejs.render(template, { dictionaries: dictionaries });
-    // 將生成的 HTML 字符串輸出到控制台
-    //console.log(renderedHtml);
+    // 將生成的 HTML 輸出
+    console.log(renderedHtml);
 
     // 當按輸出report至小時
     fs.writeFile(fileName, renderedHtml, (err) => {

@@ -12,14 +12,17 @@ const day = String(currentDate.getDate()).padStart(2, '0');
 const hour = String(currentDate.getHours()).padStart(2, '0'); 
 const currentDateTime = `${year}${month}${day}-${hour}`;
 // 連接 MongoDB 數據庫
-mongoose.connect('mongodb://admin:gn045001@localhost:27017/');
+mongoose.connect('mongodb://admin:gn045001@192.168.50.115:27017/');
+//建立DB功能
 const db = mongoose.connection;
+//當連線有問題時
 db.on('error', console.error.bind(console, 'connection error:'));
+//如果成功會回復onnected to MongoDB
 db.once('open', function() {
     console.log('Connected to MongoDB');
 });
 
-// 定義數據模型
+// 定義數據的模型
 const containerDataSchema = new mongoose.Schema({
     timestamp: String,
     container_id: String,
@@ -36,11 +39,11 @@ fs.readFile(`raw/${currentDateTime}-ComputerStart.json`, 'utf8', async (err, dat
         console.error('File exists? Confirm if the file exists at the provided path.', err);
         return;
     }
-
+    
     const dictionaries = data.trim().split('\n').map(line => JSON.parse(line));
 
     try {
-        // 將數據保存到 MongoDB 中
+        // 即將數據保存到 MongoDB 中
         const result = await ContainerData.insertMany(dictionaries);
         console.log('成功保存數據到 MongoDB：', result);
     } catch (err) {
