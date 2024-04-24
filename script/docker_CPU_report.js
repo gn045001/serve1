@@ -1,6 +1,18 @@
 // version: 0.1, date: 20240414, Creator: jiasian.lin
+// version: 0.2, date: 20240420, Creator: jiasian.lin
+
+//  pre-request
+// [projDir] project
+//   +-- [rawDir] raw <= ${currentDateTime}-ComputerStart.json
+//   +-- [rptDir] report =>${formattedDate}_CPU_report.html 、 diskreportSummer.log
+//   +-- [tmpDir] temp
+//   +-- [logDir] log
+//引入 ejs 模組，用於在 Node.js 中生成 HTML 模板
 const ejs = require('ejs');
+// 載入 fs 模組用於讀取檔案
 const fs = require('fs');
+//寫入至Summerlog
+const Summerlog = 'log/diskCPUSummer.log'
 // 獲取時間到小時
 const currentDate = new Date();
 const formattedDate = currentDate.toISOString().slice(0, 13).replace(/[-T:]/g, '');
@@ -19,6 +31,15 @@ const currentDateTime = `${year}${month}${day}-${hour}`;
 //輸出Html的資料
 const fileName = `report/${formattedDate}_CPU_report.html`;
 
+//寫進Summer log日誌
+fs.appendFile(Summerlog, '產生CPU_report.html'+ '\n', (err) => {
+    if (err) {
+        console.error('寫入log日誌有問題', err);
+        return;
+        }
+        console.log('寫入log日誌已成功寫入')
+});
+//section 2: 輸出HTML資料
 // 讀取raw的JSON 文件的内容
 fs.readFile(`raw/${currentDateTime}-ComputerStart.json`, 'utf8', (err, data) => {
     if (err) {

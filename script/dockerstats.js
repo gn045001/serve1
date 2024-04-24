@@ -1,5 +1,5 @@
 //version: 0.1, date: 20240413, Creater: jiasian.lin
-//version: 0.1, date: 20240420, Creater: jiasian.lin
+//version: 0.2, date: 20240420, Creater: jiasian.lin
 //新增 日期變數
 //section 1:description 程式變數
 const fs = require('fs');
