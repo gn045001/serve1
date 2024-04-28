@@ -158,4 +158,30 @@ fi
         echo -e "$(date)  建立ComputerStart到資料庫" >> "$current_dir/$directory/log/Summary.log"     
         tools/mongoimport --host "$host" --port $port --db admin --collection ComputerStart --file "$current_dir/$directory/raw/ComputerStart.json" --username $used --password $pass
         echo -e "$(date)  建立ComputerStart到資料庫完畢 ." >> "$current_dir/$directory/log/Summary.log" 
-    
+
+
+        echo -e "$(date)  建立Docker狀態資料中" >> "$current_dir/$directory/log/Summary.log"
+        docker stats --no-stream --format '{"timestamp": "'"$(date +'%Y-%m-%d %H:%M:%S')"'" , "container_id": "{{.ID}}", "container_name": "{{.Name}}", "cpu_percentage": "{{.CPUPerc}}", "memory_usage": "{{.MemUsage}}", "memory_percentage": "{{.MemPerc}}", "network_io": "{{.NetIO}}", "block_io": "{{.BlockIO}}"}'>>  "$current_dir/$directory/raw/test.json"
+        echo -e "$(date) 建立Docker狀態已完成資料中" >> "$current_dir/$directory/log/Summary.log"
+        
+        CPUalert=$(jq -c 'select((.cpu_percentage | sub("%";"") | tonumber) > 80) | "\(.timestamp), \(.container_name), \(.cpu_percentage), \(.memory_percentage)"' $current_dir/$directory/raw/test.json)
+        if [ ! -z "$CPUalert" ]; then
+            echo "CPUalert is not empty"
+            # 在這裡添加額外的篩選條件
+            curl -X POST \
+                -H "Authorization: Bearer $TOKEN" \
+                -F "message=$CPUalert " \
+                https://notify-api.line.me/api/notify
+        fi
+
+        memoryalert=$(jq -r 'select((.memory_percentage | sub("%";"") | tonumber) > 80) | "\(.timestamp), \(.container_name), \(.memory_usage), \(.memory_percentage)"' $current_dir/$directory/raw/test.json)
+        if [ ! -z "$memoryalert" ]; then
+            echo "memory is not empty"
+            # 在這裡添加額外的篩選條件
+            curl -X POST \
+                -H "Authorization: Bearer $TOKEN" \
+                -F "message=$memoryalert" \
+                https://notify-api.line.me/api/notify
+        fi
+        rm $current_dir/$directory/raw/test.json
+
