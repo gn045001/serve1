@@ -8,6 +8,27 @@
 //   +-- [tmpDir] temp
 //   +-- [logDir] log => memorySummer.log
 
+
+
+//小作品用處 監控docker 確認 docker 狀態 如果將以上作品放置 Openshift 或 k8s 運轉
+//順便監控我其他關於前端後端網頁的小作品運轉狀況如果未來至 K8S 或 Openshift 時
+//我的小作品下載位置
+//GitHub
+
+
+//Dokcer Hub
+
+//我的小作品相關設定
+//Docker configuration in crontab -e
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/diskreport/raw/:/app/raw/ -v /home/gn045001/diskreport/report:/app/report diskreport #產生report
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockercpureport #產生report
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockermemoryreport #產生report
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/inputcpudatamongodblog:/app/log inputcpudatamongodb   #加入至DB而已
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/inputmemorydatamongodblog:/app/log inputmemorydatamongodb  #加入至DB而已
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/log:/app/log dockerstats #加入至DB而已
+
+
+
 //section 1:執行環境的資料夾之環境變數
 //執行MongoDB數據庫
 const mongoose = require('mongoose'); 
@@ -31,11 +52,33 @@ const hour = String(currentDate.getHours()).padStart(2, '0');
 //設定時間變數給予開啟檔案的能力 
 const currentDateTime = `${year}${month}${day}-${hour}`;
 
+
+    // Line Notify 功能
+    const querystring = require('querystring');
+    // Line Notify 存取權杖
+    const accessToken = 'lbz6wRQ4qvbPQIPDQHTEiCMF2THiArWr8Utvjy0ZWG2';
+    // Line Notify API 端點
+    const axios = require('axios');
+    const url = 'https://notify-api.line.me/api/notify';
+
+    // 設定  Notify 的功能
+    const config = {
+        headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    };
+
+//檔案位置
+const filePath = `raw/${currentDateTime}-ComputerStart.json`;
+
+//section 3:執行環境的資料夾之環境變數
+if (fs.existsSync(filePath)) {
 // 連接 MongoDB 數據庫
 mongoose.connect('mongodb://admin:gn045001@192.168.50.115:27017/');
 //建立DB功能
 const db = mongoose.connection;
-// docker stats CPU狀態使用率，寫進Summer log日誌
+// docker stats  memory狀態使用率，寫進Summer log日誌
 fs.appendFile(Summerlog, '可以開始寫入資料進入mongodb'+ '\n', (err) => {
     if (err) {
         console.error('寫入log日誌有問題', err);
@@ -84,8 +127,8 @@ fs.readFile(`raw/${currentDateTime}-ComputerStart.json`, 'utf8', async (err, dat
         mongoose.connection.close();
     }
         
-    // docker stats CPU狀態使用率，寫進Summer log日誌
-    fs.appendFile(Summerlog, '以確認CPU資料完畢寫入log日誌已成功寫入'+ '\n', (err) => {
+    // docker stats memory狀態使用率，寫進Summer log日誌
+    fs.appendFile(Summerlog, '以確認memory資料完畢寫入log日誌已成功寫入'+ '\n', (err) => {
         if (err) {
             console.error('寫入log日誌有問題', err);
             return;
@@ -93,5 +136,33 @@ fs.readFile(`raw/${currentDateTime}-ComputerStart.json`, 'utf8', async (err, dat
             console.log('寫入log日誌已成功寫入')
     }); 
 });
-
-
+}else{
+    console.error('ComputerStart.json檔案不存在Input  memory data to MongoDB失敗，離開程式');
+    // 發送 POST 請求到 Line Notify API
+        const  memoryMessagelog = `error ComputerStart.json 檔案不見須注意`;            
+        const  memoryMessages = querystring.stringify({
+            message:  memoryMessagelog
+        });
+        // 發送 POST 請求到 Line Notify API
+        axios.post(url, memoryMessages, config)
+            .then(response => {
+            console.log('因為ComputerStart.json資料缺少發送訊息Line發送訊息:', response.data);
+            fs.appendFile(Summerlog, 'Line發送訊息'+ '\n', (err) => {
+                if (err) {
+                    console.error('Line發送訊息有問題', err);
+                    return;
+                    }
+                    console.log('Line發送訊息沒問題')
+                });
+            })
+            .catch(error => {
+            console.error('error ComputerStart.json 檔案不見須注意:', error.response.data);
+            fs.appendFile(Summerlog, '訊息發送失敗'+ '\n', (err) => {
+            if (err) {
+                console.error('error ComputerStart.json 檔案不見須注意寫輸入Summerlog成功', err);
+                return;
+                }
+                console.log('error ComputerStart.json 檔案不見須注意且寫輸入Summerlog失敗')
+                });
+            });  
+}
