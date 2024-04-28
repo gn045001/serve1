@@ -164,24 +164,30 @@ fi
         docker stats --no-stream --format '{"timestamp": "'"$(date +'%Y-%m-%d %H:%M:%S')"'" , "container_id": "{{.ID}}", "container_name": "{{.Name}}", "cpu_percentage": "{{.CPUPerc}}", "memory_usage": "{{.MemUsage}}", "memory_percentage": "{{.MemPerc}}", "network_io": "{{.NetIO}}", "block_io": "{{.BlockIO}}"}'>>  "$current_dir/$directory/raw/test.json"
         echo -e "$(date) 建立Docker狀態已完成資料中" >> "$current_dir/$directory/log/Summary.log"
         
+        echo -e "$(date)  進行確認是否要告警" >> "$current_dir/$directory/log/Summary.log"
+        #CPU 超過 80 % 給 line 告警
         CPUalert=$(jq -c 'select((.cpu_percentage | sub("%";"") | tonumber) > 80) | "\(.timestamp), \(.container_name), \(.cpu_percentage), \(.memory_percentage)"' $current_dir/$directory/raw/test.json)
         if [ ! -z "$CPUalert" ]; then
-            echo "CPUalert is not empty"
-            # 在這裡添加額外的篩選條件
+
             curl -X POST \
                 -H "Authorization: Bearer $TOKEN" \
                 -F "message=$CPUalert " \
                 https://notify-api.line.me/api/notify
-        fi
 
+            echo -e "$(date)  $CPUalert 有告警" >> "$current_dir/$directory/log/Summary.log"
+        fi
+        
+        
+        #memory 超過 80 % 給 line 告警
         memoryalert=$(jq -r 'select((.memory_percentage | sub("%";"") | tonumber) > 80) | "\(.timestamp), \(.container_name), \(.memory_usage), \(.memory_percentage)"' $current_dir/$directory/raw/test.json)
         if [ ! -z "$memoryalert" ]; then
-            echo "memory is not empty"
-            # 在這裡添加額外的篩選條件
+
             curl -X POST \
                 -H "Authorization: Bearer $TOKEN" \
                 -F "message=$memoryalert" \
                 https://notify-api.line.me/api/notify
+                echo -e "$(date)  $memoryalert 有告警" >> "$current_dir/$directory/log/Summary.log"
         fi
+        echo -e "$(date)  完畢" >> "$current_dir/$directory/log/Summary.log"
         rm $current_dir/$directory/raw/test.json
 
