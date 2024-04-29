@@ -3,6 +3,49 @@
 #= version: 0.1, date: 20240405, Creater: jiasian.lin
 #= version: 0.2, date: 20240406, Creater: jiasian.lin
 #= version: 0.3, date: 20240420, Creater: jiasian.lin
+#修改為每分鐘使用一次的版本
+#= version: 0.4, date: 20240429, Creater: jiasian.lin
+#確認執行CPU與記憶體使用量是否過高，如果過高80%告警，如超過監控訊息與資訊給予line api
+
+
+#  pre-request
+# [projDir] project
+#   +-- [rawDir] raw <=DockerState.json、ComputerStart.json
+#   +-- [rptDir] report 
+#   +-- [tmpDir] temp =>alert.json
+#   +-- [logDir] log <= ./log/Summary.log 、$current_dir/log/Summary.log  
+
+
+#小作品用處 監控docker 確認 docker 狀態 如果將以上作品放置 Openshift 或 k8s 運轉
+#順便監控我其他關於前端後端網頁的小作品運轉狀況如果未來至 K8S 或 Openshift 時
+#我的小作品下載位置
+#GitHub
+
+
+#Dokcer Hub
+
+#我的小作品相關設定
+#docker 
+#docker stats 的相關資訊寫成JSON
+#dcoker ps 的相關資訊寫成JSON
+#Docker configuration in crontab -e
+#確認電腦狀況
+#docker shell script 進行執行狀態觀察
+#* * * * * . ~/.bash_profile; /home/gn045001/shellscript/dockdata.sh #取得docker stats 資料
+#0 * * * * . ~/.bash_profile; /home/gn045001/shellscript/dockerstatus.sh #取得放置相關位置並給予 docker進行執行
+#openshift 的容器藉由docker確認容器狀態 
+#Docker 進行 crontab -e
+#5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/diskreport/raw/:/app/raw/ -v /home/gn045001/diskreport/report:/app/report diskreport #產生report
+#5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockercpureport #產生report
+#5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockermemoryreport #產生report
+#5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/inputcpudatamongodblog:/app/log inputcpudatamongodb   #加入至DB而已
+#5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/inputmemorydatamongodblog:/app/log inputmemorydatamongodb  #加入至DB而已
+#5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/log:/app/log dockerstats #加入至DB而已
+
+# openshift 進行執行
+
+
+
 #section 1:description 程式變數
 # 日期變數
 day=$(date +'%Y%-m%%-d')
@@ -35,7 +78,7 @@ if [ ! -d "./log/" ]; then
 fi
 
 
-#確認硬碟空間應紀錄如有異常就告警
+#section 3:確認硬碟空間應紀錄如有異常就告警
 
 disk_space=$(df -k . | awk 'NR==2 { print $4 }')
 disk_message="可用空間僅剩下$(($disk_space / 1024)) MB"
@@ -43,7 +86,7 @@ disk_message="可用空間僅剩下$(($disk_space / 1024)) MB"
 curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$disk_message" \
-        https://notify-api.line.me/api/notify
+        https:#notify-api.line.me/api/notify
 
 echo -e "$(date) $(pwd)硬碟空間剩下$disk_space " >> "$current_dir/log/Summary.log"
 
@@ -57,7 +100,7 @@ if [ $disk_space -lt $ThresholdMax ]; then
     curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$ThresholdMaxmessage " \
-        https://notify-api.line.me/api/notify
+        https:#notify-api.line.me/api/notify
     echo -e "$(date) $(pwd)$ThresholdMaxmessage " >> "$current_dir/log/Summary.log"
 
 elif [ $disk_space -lt $ThresholdMin ]; then
@@ -67,13 +110,17 @@ elif [ $disk_space -lt $ThresholdMin ]; then
     curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$ThresholdMinmessage " \
-        https://notify-api.line.me/api/notify  
+        https:#notify-api.line.me/api/notify  
         
         # 磁碟空間不足，終止腳本
         echo -e "$(date) $(pwd)剩餘空間小於$ThresholdMinmessage 需求已停止" >> "$current_dir/log/Summary.log"
         exit 1     
 fi
 echo -e "$(date)確認硬碟空間狀態$disk_space" >> "$current_dir/log/Summary.log"
+
+
+
+
 #當空間小於$ThresholdMin值無法進行執行需求
 echo -e "$(date) $(pwd)硬碟空間剩下$disk_space" >> "$current_dir/log/Summary.log"
 if [ ! -d "$current_dir/$directory" ]; then
@@ -90,12 +137,12 @@ if [ ! -d "$current_dir/$directory" ]; then
         curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$test " \
-        https://notify-api.line.me/api/notify
+        https:#notify-api.line.me/api/notify
 
         curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$MESSAGE " \
-        https://notify-api.line.me/api/notify
+        https:#notify-api.line.me/api/notify
         # 將執行成功的訊息記錄到日誌中
         echo -e  "$(date) $MESSAGE Line Notify End." >> "$current_dir/$directory/log/Summary.log" 
         echo -e "$(date) Directory $current_dir/$directory Create a Folder." >> "$current_dir/$directory/log/Summary.log"  
@@ -107,12 +154,12 @@ else
         curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$test " \
-        https://notify-api.line.me/api/notify
+        https:#notify-api.line.me/api/notify
 
         curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$MESSAGE " \
-        https://notify-api.line.me/api/notify
+        https:#notify-api.line.me/api/notify
         # 將執行成功的訊息記錄到日誌中
         echo -e "$(date) $MESSAGE Directory $current_dir/$directory already exists. Skipping creation." >> "$current_dir/$directory/log/Summary.log"        
     
@@ -134,7 +181,7 @@ fi
         tools/mongoimport --host "$host" --port $port --db admin --collection DiskSpace --file "$current_dir/$directory/raw/DiskSpace.json" --username $used --password $pass
         
         
-#將Docker 資訊
+#section 4:將Docker stats 和Docker ps 相關資訊藉由mongoDB tools 推至 mongoDB中資訊
 #確認docker 運行情況，並在需要時對容器進行管理
         echo -e "$(date) 確認運行情況是否正常">>"$current_dir/$directory/log/Summary.log"
         docker ps --format '{"timestamp": "'"$(date +'%Y-%m-%d %H:%M:%S')"'" ,"Container ID":"{{.ID}}", "Image":"{{.Image}}", "Created":"{{.RunningFor}}", "Status":"{{.Status}}"}' > "$current_dir/$directory/raw/DockerState.json"
@@ -161,33 +208,37 @@ fi
 
 
         echo -e "$(date)  建立Docker狀態資料中" >> "$current_dir/$directory/log/Summary.log"
-        docker stats --no-stream --format '{"timestamp": "'"$(date +'%Y-%m-%d %H:%M:%S')"'" , "container_id": "{{.ID}}", "container_name": "{{.Name}}", "cpu_percentage": "{{.CPUPerc}}", "memory_usage": "{{.MemUsage}}", "memory_percentage": "{{.MemPerc}}", "network_io": "{{.NetIO}}", "block_io": "{{.BlockIO}}"}'>>  "$current_dir/$directory/raw/test.json"
+        docker stats --no-stream --format '{"timestamp": "'"$(date +'%Y-%m-%d %H:%M:%S')"'" , "container_id": "{{.ID}}", "container_name": "{{.Name}}", "cpu_percentage": "{{.CPUPerc}}", "memory_usage": "{{.MemUsage}}", "memory_percentage": "{{.MemPerc}}", "network_io": "{{.NetIO}}", "block_io": "{{.BlockIO}}"}'>>  "$current_dir/$directory/temp/alert.json"
         echo -e "$(date) 建立Docker狀態已完成資料中" >> "$current_dir/$directory/log/Summary.log"
         
         echo -e "$(date)  進行確認是否要告警" >> "$current_dir/$directory/log/Summary.log"
+
+#section 5:CPU與記憶體的狀態並告警
+
         #CPU 超過 80 % 給 line 告警
-        CPUalert=$(jq -c 'select((.cpu_percentage | sub("%";"") | tonumber) > 80) | "\(.timestamp), \(.container_name), \(.cpu_percentage), \(.memory_percentage)"' $current_dir/$directory/raw/test.json)
+        CPUalert=$(jq -c 'select((.cpu_percentage | sub("%";"") | tonumber) > 80) | "\(.timestamp), \(.container_name), \(.cpu_percentage), \(.memory_percentage)"' $current_dir/$directory/temp/alert.json)
         if [ ! -z "$CPUalert" ]; then
 
             curl -X POST \
                 -H "Authorization: Bearer $TOKEN" \
                 -F "message=$CPUalert " \
-                https://notify-api.line.me/api/notify
+                https:#notify-api.line.me/api/notify
 
-            echo -e "$(date)  $CPUalert 有告警" >> "$current_dir/$directory/log/Summary.log"
+            echo -e "$(date)  $CPUalert 有使用量問題須告警" >> "$current_dir/$directory/log/Summary.log"
         fi
         
         
         #memory 超過 80 % 給 line 告警
-        memoryalert=$(jq -r 'select((.memory_percentage | sub("%";"") | tonumber) > 80) | "\(.timestamp), \(.container_name), \(.memory_usage), \(.memory_percentage)"' $current_dir/$directory/raw/test.json)
+        memoryalert=$(jq -r 'select((.memory_percentage | sub("%";"") | tonumber) > 80) | "\(.timestamp), \(.container_name), \(.memory_usage), \(.memory_percentage)"' $current_dir/$directory/temp/alert.json)
         if [ ! -z "$memoryalert" ]; then
 
             curl -X POST \
                 -H "Authorization: Bearer $TOKEN" \
                 -F "message=$memoryalert" \
-                https://notify-api.line.me/api/notify
-                echo -e "$(date)  $memoryalert 有告警" >> "$current_dir/$directory/log/Summary.log"
+                https:#notify-api.line.me/api/notify
+                echo -e "$(date)  $memoryalert 有使用量問題須告警" >> "$current_dir/$directory/log/Summary.log"
         fi
-        echo -e "$(date)  完畢" >> "$current_dir/$directory/log/Summary.log"
-        rm $current_dir/$directory/raw/test.json
-
+        
+        rm $current_dir/$directory/temp/alert.json
+        echo -e "$(date)  刪除資料/temp/alert.json" >> "$current_dir/$directory/log/Summary.log"
+    echo -e "$(date)  dockerdata執行完畢" >> "$current_dir/$directory/log/Summary.log"
