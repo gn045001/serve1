@@ -5,7 +5,7 @@
 #= version: 0.3, date: 20240420, Creater: jiasian.lin
 #修改為每分鐘使用一次的版本
 #= version: 0.4, date: 20240429, Creater: jiasian.lin
-#確認執行CPU與記憶體使用量是否過高，如果過高80%告警，如超過監控訊息與資訊給予line api
+#確認執行CPU與記憶體使用量是否過高，如果過高80%告警，如超過監控訊息與資訊給予line api，並清理alert.json資訊
 
 
 #  pre-request
@@ -31,10 +31,10 @@
 #Docker configuration in crontab -e
 #確認電腦狀況
 #docker shell script 進行執行狀態觀察
-#* * * * * . ~/.bash_profile; /home/gn045001/shellscript/dockdata.sh #取得docker stats 資料
-#0 * * * * . ~/.bash_profile; /home/gn045001/shellscript/dockerstatus.sh #取得放置相關位置並給予 docker進行執行
+#* * * * * . ~/.bash_profile; /home/gn045001/shellscript/dockdata.sh #取得docker stats 資料 ，第一步取得每分鐘的資料
+#0 * * * * . ~/.bash_profile; /home/gn045001/shellscript/dockerstatus.sh #取得放置相關位置並給予 docker進行執行，第二步將資料傳出去
 #openshift 的容器藉由docker確認容器狀態 
-#Docker 進行 crontab -e
+#Docker 進行 crontab -e 每小時 5分時執行以下需求
 #5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/diskreport/raw/:/app/raw/ -v /home/gn045001/diskreport/report:/app/report diskreport #產生report
 #5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockercpureport #產生report
 #5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockermemoryreport #產生report
@@ -125,7 +125,7 @@ echo -e "$(date)確認硬碟空間狀態$disk_space" >> "$current_dir/log/Summar
 echo -e "$(date) $(pwd)硬碟空間剩下$disk_space" >> "$current_dir/log/Summary.log"
 if [ ! -d "$current_dir/$directory" ]; then
     echo -e "$(date) 尚未建立$current_dir/$directory" 需建立執行專案空間 >> "$current_dir/log/Summary.log"
-    mkdir -p "$current_dir/$directory"/{raw,processed,QC,script,report,log}
+    mkdir -p "$current_dir/$directory"/{raw,processed,QC,temp,script,report,log}
     touch "$current_dir/$directory"/log/Summary.log
     ln -s $current_dir/mongoDBtool/mongodb-database-tools-rhel90-x86_64-100.9.4/bin $current_dir/$directory/tools
 
@@ -238,7 +238,18 @@ fi
                 https:#notify-api.line.me/api/notify
                 echo -e "$(date)  $memoryalert 有使用量問題須告警" >> "$current_dir/$directory/log/Summary.log"
         fi
+#section 6:執行完畢清理 temp 檔案
+    if [ -f "$current_dir/$directory/temp/alert.json" ]; then
+        rm "$current_dir/$directory/temp/alert.json"      
+    else
+        errorlog="有問題需確認"
+        curl -X POST \
+            -H "Authorization: Bearer $TOKEN" \
+            -F "message=$errorlog" \
+            https:#notify-api.line.me/api/notify
+        echo -e "$(date)  $memoryalert 有使用量問題須告警" >> "$current_dir/$directory/log/Summary.log"        
         
-        rm $current_dir/$directory/temp/alert.json
+    fi
+        
         echo -e "$(date)  刪除資料/temp/alert.json" >> "$current_dir/$directory/log/Summary.log"
     echo -e "$(date)  dockerdata執行完畢" >> "$current_dir/$directory/log/Summary.log"
