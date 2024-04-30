@@ -8,17 +8,20 @@
 //Dokcer Hub
 
 
-//  pre-request
+//  pre-request  
 // [projDir] project
 //   +-- [rawDir] raw 
-//   +-- [rptDir] report =>dockerInformationreport.csv 、 dockerInformationreport.json
+//   +-- [rptDir] report 
 //   +-- [tmpDir] temp
 //   +-- [logDir] log
 
-
+//section 1:工具套件
+//工具套件
 const express = require('express');
 const mongoose = require('mongoose');
 
+
+//section 2:mongoDB 數據讀取
 mongoose.connect('mongodb://admin:gn045001@localhost:27017/');
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -26,8 +29,7 @@ db.once('open', function() {
     console.log('Connected to MongoDB');
 });
 
-//資料天數設定
-
+//section 3:設定資料的天數
 //取七天內的資料
 const sevenDaysAgo = new Date();
 sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -51,11 +53,9 @@ twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 const oneDaysAgo = new Date();
 oneDaysAgo.setDate(oneDaysAgo.getDate() - 1);
 
-
-
 const app = express();
 
-// 定义数据模型
+//section 4: 定義數據
 const containerDataSchema = new mongoose.Schema({
     timestamp: String,
     container_name: String,
@@ -65,9 +65,9 @@ const containerDataSchema = new mongoose.Schema({
  const ContainerData = mongoose.model('cpustats', containerDataSchema);
 
 
-// 返回 index.html 文件
+//section 5: 返回 index.html 文件
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/dockerInformationreportindex.html');
+    res.sendFile(__dirname + '/dockerCPUInformationreportindex.html');
 });
 //gitlab
 // 一天資料回傳
@@ -284,6 +284,148 @@ app.get('/my-mongodbsevenDaysgetData', async (req, res) => {
     }
 });
 
+//Sonarqube
+// 一天資料回傳
+app.get('/SonarqubeoneDaysgetData', async (req, res) => {
+    try {
+        const data = await ContainerData.find({
+            container_name: "sonarqube",
+            timestamp: { $gte: oneDaysAgo.toISOString() }
+        }, { timestamp: 1, container_name: 1, cpu_percentage: 1, _id: 0 });
+        res.json(data);
+    } catch (err) {
+        console.error('Failed to retrieve data from MongoDB:', err);
+        res.status(500).json({ error: 'Failed to retrieve data from MongoDB' });
+    }
+});
+
+//二天資料回傳
+app.get('/SonarqubetwoDaysgetData', async (req, res) => {
+    try {
+        const data = await ContainerData.find({
+            container_name: "sonarqube",
+            timestamp: { $gte: twoDaysAgo.toISOString() }
+        }, { timestamp: 1, container_name: 1, cpu_percentage: 1, _id: 0 });
+        res.json(data);
+    } catch (err) {
+        console.error('Failed to retrieve data from MongoDB:', err);
+        res.status(500).json({ error: 'Failed to retrieve data from MongoDB' });
+    }
+});
+
+//三天資料回傳
+app.get('/SonarqubethreeDaysgetData', async (req, res) => {
+    try {
+        const data = await ContainerData.find({
+            container_name: "sonarqube",
+            timestamp: { $gte: threeDaysAgo.toISOString() }
+        }, { timestamp: 1, container_name: 1, cpu_percentage: 1, _id: 0 });
+        res.json(data);
+    } catch (err) {
+        console.error('Failed to retrieve data from MongoDB:', err);
+        res.status(500).json({ error: 'Failed to retrieve data from MongoDB' });
+    }
+});
+
+//五天資料回傳
+app.get('/SonarqubefiveDaysgetData', async (req, res) => {
+    try {
+        const data = await ContainerData.find({
+            container_name: "sonarqube",
+            timestamp: { $gte: fiveDaysAgo.toISOString() }
+        }, { timestamp: 1, container_name: 1, cpu_percentage: 1, _id: 0 });
+        res.json(data);
+    } catch (err) {
+        console.error('Failed to retrieve data from MongoDB:', err);
+        res.status(500).json({ error: 'Failed to retrieve data from MongoDB' });
+    }
+});
+
+//七天資料回傳
+app.get('/SonarqubesevenDaysgetData', async (req, res) => {
+    try {
+        const data = await ContainerData.find({
+            container_name: "sonarqube",
+            timestamp: { $gte: sevenDaysAgo.toISOString() }
+        }, { timestamp: 1, container_name: 1, cpu_percentage: 1, _id: 0 });
+        res.json(data);
+    } catch (err) {
+        console.error('Failed to retrieve data from MongoDB:', err);
+        res.status(500).json({ error: 'Failed to retrieve data from MongoDB' });
+    }
+});
+
+
+//redmine
+// 一天資料回傳
+app.get('/redmineoneDaysgetData', async (req, res) => {
+    try {
+        const data = await ContainerData.find({
+            container_name: "some-redmine",
+            timestamp: { $gte: oneDaysAgo.toISOString() }
+        }, { timestamp: 1, container_name: 1, cpu_percentage: 1, _id: 0 });
+        res.json(data);
+    } catch (err) {
+        console.error('Failed to retrieve data from MongoDB:', err);
+        res.status(500).json({ error: 'Failed to retrieve data from MongoDB' });
+    }
+});
+
+//二天資料回傳
+app.get('/redminetwoDaysgetData', async (req, res) => {
+    try {
+        const data = await ContainerData.find({
+            container_name: "some-redmine",
+            timestamp: { $gte: twoDaysAgo.toISOString() }
+        }, { timestamp: 1, container_name: 1, cpu_percentage: 1, _id: 0 });
+        res.json(data);
+    } catch (err) {
+        console.error('Failed to retrieve data from MongoDB:', err);
+        res.status(500).json({ error: 'Failed to retrieve data from MongoDB' });
+    }
+});
+
+//三天資料回傳
+app.get('/redminethreeDaysgetData', async (req, res) => {
+    try {
+        const data = await ContainerData.find({
+            container_name: "some-redmine",
+            timestamp: { $gte: threeDaysAgo.toISOString() }
+        }, { timestamp: 1, container_name: 1, cpu_percentage: 1, _id: 0 });
+        res.json(data);
+    } catch (err) {
+        console.error('Failed to retrieve data from MongoDB:', err);
+        res.status(500).json({ error: 'Failed to retrieve data from MongoDB' });
+    }
+});
+
+//五天資料回傳
+app.get('/redminefiveDaysgetData', async (req, res) => {
+    try {
+        const data = await ContainerData.find({
+            container_name: "some-redmine",
+            timestamp: { $gte: fiveDaysAgo.toISOString() }
+        }, { timestamp: 1, container_name: 1, cpu_percentage: 1, _id: 0 });
+        res.json(data);
+    } catch (err) {
+        console.error('Failed to retrieve data from MongoDB:', err);
+        res.status(500).json({ error: 'Failed to retrieve data from MongoDB' });
+    }
+});
+
+//七天資料回傳
+app.get('/redminesevenDaysgetData', async (req, res) => {
+    try {
+        const data = await ContainerData.find({
+            container_name: "some-redmine",
+            timestamp: { $gte: sevenDaysAgo.toISOString() }
+        }, { timestamp: 1, container_name: 1, cpu_percentage: 1, _id: 0 });
+        res.json(data);
+    } catch (err) {
+        console.error('Failed to retrieve data from MongoDB:', err);
+        res.status(500).json({ error: 'Failed to retrieve data from MongoDB' });
+    }
+});
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
