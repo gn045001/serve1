@@ -31,7 +31,7 @@
 
 
 
-
+//section 1:工具套件
 // 引入 ejs 模組，用於在 Node.js 中生成 HTML 模板
 const ejs = require('ejs');
 // 載入 fs 模組用於讀取檔案

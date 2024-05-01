@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Memory Chart</title>
+    <!-- 引入 Chart.js 相关文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>
+        Memory data
+    </h1>
+    <canvas id="combinedMemoryChart"></canvas>
+    <script>
+        Promise.all([
+            fetch('/GitLaboneDaysgetData').then(response => response.json()),
+            fetch('/jenkinsoneDaysgetData').then(response => response.json()),
+            fetch('/mongoDBoneDaysgetData').then(response => response.json()),
+            fetch('/sonarqubeoneDaysgetData').then(response => response.json()),
+            fetch('/redmineoneDaysgetData').then(response => response.json())
+        ]).then(dataArray => {
+            const gitlabData = dataArray[0];
+            const jenkinsData = dataArray[1];
+            const mongoDBData = dataArray[2];
+            const redmineData = dataArray[3];
+            const sonarqubeData = dataArray[4];
+            const labels = gitlabData.labels;
+            const gitlabMemoryPercentages = gitlabData.memoryPercentages;
+            const jenkinsMemoryPercentages = jenkinsData.memoryPercentages;
+            const mongoDBMemoryPercentages = mongoDBData.memoryPercentages;
+            const redmineMemoryPercentages = redmineData.memoryPercentages;
+            const sonarqubeMemoryPercentages = sonarqubeData.memoryPercentages;
+            const ctx = document.getElementById('combinedMemoryChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Gitlab Memory Percentage',
+                            data: gitlabMemoryPercentages,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Jenkins Memory Percentage',
+                            data: jenkinsMemoryPercentages,
+                            borderColor: 'rgba(0, 255, 0, 1)',
+                            backgroundColor: 'rgba(0, 255, 0, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'MongoDB Memory Percentage',
+                            data: mongoDBMemoryPercentages,
+                            borderColor: 'rgba(0, 0, 0, 1)',
+                            backgroundColor: 'rgba(0, 0, 0, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Redmine Memory Percentage',
+                            data: redmineMemoryPercentages,
+                            borderColor: 'rgba(255, 255, 0, 1)',
+                            backgroundColor: 'rgba(255, 255, 0, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Sonarqube Memory Percentage',
+                            data: sonarqubeMemoryPercentages,
+                            borderColor: 'rgba(128, 0, 128, 1)',
+                            backgroundColor: 'rgba(128, 0, 128, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
