@@ -11,7 +11,7 @@
 //  pre-request  
 // [projDir] project
 //   +-- [rawDir] raw 
-//   +-- [rptDir] report => GitLabdata.json ,jenkinsbdata.json ,Jenkinsdata.json ,mongodbdata.json ,redminedata.json ,sonarqubedata.json
+//   +-- [rptDir] report => CPU_GitLabdata.json ,CPU_jenkinsbdata.json ,CPU_Jenkinsdata.json ,CPU_mongodbdata.json ,CPU_redminedata.json ,CPU_sonarqubedata.json ,Summer.log
 //   +-- [tmpDir] temp
 //   +-- [logDir] log => Summer.log
 
@@ -71,12 +71,18 @@ const config = {
 
 // log and report Pathway 的位置
 
-const Summerlog = 'report/diskreportSummer.log'
-const GitLabreport = 'report/GitLabdata.json'
-const jenkinsreport = 'report/jenkinsbdata.json'
-const mongodbreport = 'report/mongodbdata.json'
-const redminereport = 'report/redminedata.json'
-const sonarqubereport = 'report/sonarqubedata.json'
+const Summerlog = 'report/Summer.log'
+const GitLabreport = 'report/CPU_GitLabdata.json'
+const jenkinsreport = 'report/CPU_jenkinsbdata.json'
+const mongodbreport = 'report/CPU_mongodbdata.json'
+const redminereport = 'report/CPU_redminedata.json'
+const sonarqubereport = 'report/CPU_sonarqubedata.json'
+
+const GitLabreportcsv = 'report/CPU_GitLabdata.csv'
+const jenkinsreportcsv = 'report/CPU_jenkinsbdata.csv'
+const mongodbreportcsv = 'report/CPU_mongodbdata.csv'
+const redminereportcsv = 'report/CPU_redminedata.csv'
+const sonarqubereportcsv = 'report/CPU_sonarqubedata.csv'
 
 
 //   +--
@@ -134,6 +140,28 @@ app.get('/GitLaboneDaysgetData', async (req, res) => {
         // 輸出 JSON 檔案
         fs.writeFileSync(GitLabreport, JSON.stringify(data, null, 2));
 
+        // GitLabreport Read JSON data from file
+        fs.readFile(GitLabreport, 'utf8', (err, data) => {
+            if (err) {
+            console.error('Error reading JSON file:', err);
+            return;
+            }
+        
+            try {
+            // Parse JSON data
+            const jsonData = JSON.parse(data);
+        
+            // Convert JSON to CSV
+            const csvData = jsonData.map(row => Object.values(row).join(',')).join('\n');
+        
+            // Write CSV data to a file
+            fs.writeFileSync(GitLabreportcsv, Object.keys(jsonData[0]).join(',') + '\n' + csvData);
+        
+
+            } catch (err) {
+            console.error('Error parsing JSON data:', err);
+            }
+        });
 
     } catch (err) {
         // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端
@@ -213,6 +241,29 @@ app.get('/jenkinsoneDaysgetData', async (req, res) => {
 
         // 輸出 JSON 檔案
         fs.writeFileSync(jenkinsreport, JSON.stringify(data, null, 2));
+        
+        // jenkinreport Read JSON data from file
+        fs.readFile(jenkinsreport, 'utf8', (err, data) => {
+            if (err) {
+            console.error('Error reading JSON file:', err);
+            return;
+            }
+        
+            try {
+            // Parse JSON data
+            const jsonData = JSON.parse(data);
+        
+            // Convert JSON to CSV
+            const csvData = jsonData.map(row => Object.values(row).join(',')).join('\n');
+        
+            // Write CSV data to a file
+            fs.writeFileSync(jenkinsreportcsv, Object.keys(jsonData[0]).join(',') + '\n' + csvData);
+        
+
+            } catch (err) {
+            console.error('Error parsing JSON data:', err);
+            }
+        });
 
     } catch (err) {
         // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端
@@ -291,6 +342,28 @@ app.get('/mongodboneDaysgetData', async (req, res) => {
         // 輸出 JSON 檔案
         fs.writeFileSync(mongodbreport, JSON.stringify(data, null, 2));
 
+        // mongodbreport Read JSON data from file
+        fs.readFile(mongodbreport, 'utf8', (err, data) => {
+            if (err) {
+            console.error('Error reading JSON file:', err);
+            return;
+            }
+        
+            try {
+            // Parse JSON data
+            const jsonData = JSON.parse(data);
+        
+            // Convert JSON to CSV
+            const csvData = jsonData.map(row => Object.values(row).join(',')).join('\n');
+        
+            // Write CSV data to a file
+            fs.writeFileSync(mongodbreportcsv, Object.keys(jsonData[0]).join(',') + '\n' + csvData);
+        
+
+            } catch (err) {
+            console.error('Error parsing JSON data:', err);
+            }
+        });
     } catch (err) {
         // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端
         console.error('Failed to retrieve data from MongoDB:', err);
@@ -370,6 +443,52 @@ app.get('/redmineoneDaysgetData', async (req, res) => {
 
         // 輸出 JSON 檔案
         fs.writeFileSync(redminereport, JSON.stringify(data, null, 2));
+
+        // redminereport Read JSON data from file
+        fs.readFile(redminereport, 'utf8', (err, data) => {
+            if (err) {
+            console.error('Error reading JSON file:', err);
+            return;
+            }
+        
+            try {
+            // Parse JSON data
+            const jsonData = JSON.parse(data);
+        
+            // Convert JSON to CSV
+            const csvData = jsonData.map(row => Object.values(row).join(',')).join('\n');
+        
+            // Write CSV data to a file
+            fs.writeFileSync(redminereportcsv, Object.keys(jsonData[0]).join(',') + '\n' + csvData);
+        
+
+            } catch (err) {
+            console.error('Error parsing JSON data:', err);
+            }
+        });
+
+                        // sonarqube Read JSON data from file
+            fs.readFile(sonarqubereport, 'utf8', (err, data) => {
+                if (err) {
+                console.error('Error reading JSON file:', err);
+                return;
+                }
+            
+                try {
+                // Parse JSON data
+                const jsonData = JSON.parse(data);
+            
+                // Convert JSON to CSV
+                const csvData = jsonData.map(row => Object.values(row).join(',')).join('\n');
+            
+                // Write CSV data to a file
+                fs.writeFileSync(sonarqubereportcsv, Object.keys(jsonData[0]).join(',') + '\n' + csvData);
+            
+    
+                } catch (err) {
+                console.error('Error parsing JSON data:', err);
+                }
+            });
     } catch (err) {
         // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端
         console.error('Failed to retrieve data from MongoDB:', err);
@@ -500,4 +619,18 @@ fs.appendFile(Summerlog,  `${oneDaysAgo},已執行結束`+ '\n', (err) => {
         }
         console.log('mongoDB已執行結束寫入沒問題')
     });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
