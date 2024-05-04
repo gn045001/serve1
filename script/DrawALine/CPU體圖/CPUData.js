@@ -1,5 +1,7 @@
 // version: 0.1, date: 20240430, Creator: jiasian.lin
-
+// version: 0.2, date: 20240504, Creator: jiasian.lin
+//當很多資料都沒呈現敏顯得波段時就很亂
+// 
 //小作品用處 監控docker 確認 docker 狀態的網頁report 如果將以上作品放置 Openshift 或 k8s 運轉
 //順便監控我其他關於前端後端網頁的小作品運轉狀況如果未來至 K8S 或 Openshift 時
 //我的小作品下載位置
@@ -11,7 +13,9 @@
 //  pre-request  
 // [projDir] project
 //   +-- [rawDir] raw 
-//   +-- [rptDir] report => CPU_GitLabdata.json ,CPU_jenkinsbdata.json ,CPU_Jenkinsdata.json ,CPU_mongodbdata.json ,CPU_redminedata.json ,CPU_sonarqubedata.json ,Summer.log
+//   +-- [rptDir] report 
+// => CPU_GitLabdata.json ,CPU_jenkinsbdata.json ,CPU_Jenkinsdata.json ,CPU_mongodbdata.json ,CPU_redminedata.json ,CPU_sonarqubedata.json ,Summer.log
+// => CPU_GitLabdata.csv ,CPU_jenkinsbdata.csv ,CPU_Jenkinsdata.csv ,CPU_mongodbdata.csv ,CPU_redminedata.csv ,CPU_sonarqubedata.csv 
 //   +-- [tmpDir] temp
 //   +-- [logDir] log => Summer.log
 
@@ -467,7 +471,7 @@ app.get('/redmineoneDaysgetData', async (req, res) => {
             }
         });
 
-                        // sonarqube Read JSON data from file
+            // sonarqube Read JSON data from file
             fs.readFile(sonarqubereport, 'utf8', (err, data) => {
                 if (err) {
                 console.error('Error reading JSON file:', err);
@@ -565,6 +569,29 @@ app.get('/sonarqubeoneDaysgetData', async (req, res) => {
 
         // 輸出 JSON 檔案
         fs.writeFileSync(sonarqubereport, JSON.stringify(data, null, 2));
+
+        // sonarqube Read JSON data from file
+            fs.readFile(sonarqubereport, 'utf8', (err, data) => {
+            if (err) {
+                console.error('Error reading JSON file:', err);
+                return;
+                }
+                    
+                try {
+                // Parse JSON data
+                const jsonData = JSON.parse(data);
+                    
+                // Convert JSON to CSV
+                const csvData = jsonData.map(row => Object.values(row).join(',')).join('\n');
+                    
+                // Write CSV data to a file
+                fs.writeFileSync(sonarqubereportcsv, Object.keys(jsonData[0]).join(',') + '\n' + csvData);
+                    
+            
+                } catch (err) {
+                console.error('Error parsing JSON data:', err);
+                }
+            });
     } catch (err) {
         // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端
         console.error('Failed to retrieve data from MongoDB:', err);
