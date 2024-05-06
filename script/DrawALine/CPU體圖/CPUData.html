@@ -6,11 +6,211 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    
+    <!-- 第一張圖 -->
+    <h1>
+        GitLab CPU Usage Chart
+    </h1>
+    <canvas id="gitlabCPUChart"></canvas>
+    <!-- 第二張圖 -->
+    <h1>
+        Jenkins CPU Usage Chart
+    </h1>
+    <canvas id="jenkinsCPUChart"></canvas>
+    <!-- 還尚未修改 -->
+    <!-- 第三張圖 -->
+    <h1>
+        MongoDB CPU Usage Chart
+    </h1>
+    <canvas id="mongoCPUChart"></canvas>
+    <!-- 第四張圖 -->
+    <h1>
+        Sonarqube CPU Usage Chart
+    </h1>
+    <canvas id="sonarqubeCPUChart"></canvas>
+    <!-- 第五張圖 -->
+    <h1>
+        Redmine CPU Usage Chart
+    </h1>
+    <canvas id="redmineCPUChart"></canvas>
+    <!-- 第六張圖 -->
     <h1>
         CPU data
     </h1>
-    <canvas id="combinedMemoryChart"></canvas>
-    <script>
+    <canvas id="combinedCPUChart"></canvas> 
+
+
+<script>
+    //第一張圖
+    Promise.all([
+    fetch('/GitLaboneDaysgetData').then(response => response.json()),
+    ]).then(dataArray => {
+        const gitlabData = dataArray[0];
+        const labels = gitlabData.labels;
+        const gitlabMemoryPercentages = gitlabData.cpuPercentages;
+        const ctx = document.getElementById('gitlabCPUChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Gitlab CPU_Percentage',
+                        data: gitlabMemoryPercentages,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    },
+
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+
+        //第二張圖
+        Promise.all([
+            fetch('/jenkinsoneDaysgetData').then(response => response.json()),
+        ]).then(dataArray => {
+            const jenkinsData = dataArray[0];
+            const labels = jenkinsData.labels;
+            const jenkinsMemoryPercentages = jenkinsData.cpuPercentages;
+            const ctx = document.getElementById('jenkinsCPUChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'jenkins CPU_Percentage',
+                            data: jenkinsMemoryPercentages,
+                            borderColor: 'rgba(0, 255, 0, 1)',
+                            backgroundColor: 'rgba(0, 255, 0, 1)',
+                            borderWidth: 1
+                        },
+
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+
+
+        //第三張圖
+        Promise.all([
+        fetch('/mongoDBoneDaysgetData').then(response => response.json()),
+        ]).then(dataArray => {
+            const gitlabData = dataArray[0];
+            const labels = gitlabData.labels;
+            const gitlabMemoryPercentages = gitlabData.cpuPercentages;
+            const ctx = document.getElementById('mongoCPUChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'mongoDB CPU_Percentage',
+                            data: gitlabMemoryPercentages,
+                            borderColor: 'rgba(0, 0, 0, 1)',
+                            backgroundColor: 'rgba(0, 0, 0, 1)',
+                            borderWidth: 1
+                        },
+
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+
+
+        //第四張圖
+        Promise.all([
+        fetch('/sonarqubeoneDaysgetData').then(response => response.json()),
+        ]).then(dataArray => {
+            const gitlabData = dataArray[0];
+            const labels = gitlabData.labels;
+            const gitlabMemoryPercentages = gitlabData.cpuPercentages;
+            const ctx = document.getElementById('sonarqubeCPUChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'sonarqube CPU_Percentage',
+                            data: gitlabMemoryPercentages,
+                            borderColor: 'rgba(128, 0, 128, 1)',
+                            backgroundColor: 'rgba(128, 0, 128, 1)',
+                            borderWidth: 1
+                        },
+
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+
+
+        //第五張圖
+        Promise.all([
+        fetch('/redmineoneDaysgetData').then(response => response.json()),
+        ]).then(dataArray => {
+            const gitlabData = dataArray[0];
+            const labels = gitlabData.labels;
+            const redmineMemoryPercentages = gitlabData.cpuPercentages;
+            const ctx = document.getElementById('redmineCPUChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Redmine CPU_Percentage',
+                            data: redmineMemoryPercentages,
+                            borderColor: 'rgba(255, 255, 0, 1)',
+                            backgroundColor: 'rgba(255, 255, 0, 1)',
+                            borderWidth: 1
+                        },
+
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+ 
+
+        //第六張圖
         Promise.all([
             fetch('/GitLaboneDaysgetData').then(response => response.json()),
             fetch('/jenkinsoneDaysgetData').then(response => response.json()),
@@ -29,7 +229,7 @@
             const mongoDBMemoryPercentages = mongoDBData.cpuPercentages;
             const redmineMemoryPercentages = redmineData.cpuPercentages;
             const sonarqubeMemoryPercentages = sonarqubeData.cpuPercentages;
-            const ctx = document.getElementById('combinedMemoryChart').getContext('2d');
+            const ctx = document.getElementById('combinedCPUChart').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -80,7 +280,8 @@
                     }
                 }
             });
-        });
+        });        
+
     </script>
 </body>
 </html>

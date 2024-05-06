@@ -13,7 +13,7 @@
 #   +-- [rawDir] raw <=DockerState.json、ComputerStart.json
 #   +-- [rptDir] report 
 #   +-- [tmpDir] temp =>alert.json
-#   +-- [logDir] log <= ./log/Summary.log 、$current_dir/log/Summary.log  
+#   +-- [logDir] log => ./log/Summary.log 、$current_dir/log/Summary.log  
 
 
 #小作品用處 監控docker 確認 docker 狀態 如果將以上作品放置 Openshift 或 k8s 運轉
@@ -86,7 +86,7 @@ disk_message="可用空間僅剩下$(($disk_space / 1024)) MB"
 curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$disk_message" \
-        https:#notify-api.line.me/api/notify
+        https://notify-api.line.me/api/notify
 
 echo -e "$(date) $(pwd)硬碟空間剩下$disk_space " >> "$current_dir/log/Summary.log"
 
@@ -100,7 +100,7 @@ if [ $disk_space -lt $ThresholdMax ]; then
     curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$ThresholdMaxmessage " \
-        https:#notify-api.line.me/api/notify
+        https://notify-api.line.me/api/notify
     echo -e "$(date) $(pwd)$ThresholdMaxmessage " >> "$current_dir/log/Summary.log"
 
 elif [ $disk_space -lt $ThresholdMin ]; then
@@ -110,7 +110,7 @@ elif [ $disk_space -lt $ThresholdMin ]; then
     curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$ThresholdMinmessage " \
-        https:#notify-api.line.me/api/notify  
+        https://notify-api.line.me/api/notify  
         
         # 磁碟空間不足，終止腳本
         echo -e "$(date) $(pwd)剩餘空間小於$ThresholdMinmessage 需求已停止" >> "$current_dir/log/Summary.log"
@@ -137,12 +137,12 @@ if [ ! -d "$current_dir/$directory" ]; then
         curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$test " \
-        https:#notify-api.line.me/api/notify
+        https://notify-api.line.me/api/notify
 
         curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$MESSAGE " \
-        https:#notify-api.line.me/api/notify
+        https://notify-api.line.me/api/notify
         # 將執行成功的訊息記錄到日誌中
         echo -e  "$(date) $MESSAGE Line Notify End." >> "$current_dir/$directory/log/Summary.log" 
         echo -e "$(date) Directory $current_dir/$directory Create a Folder." >> "$current_dir/$directory/log/Summary.log"  
@@ -154,12 +154,12 @@ else
         curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$test " \
-        https:#notify-api.line.me/api/notify
+        https://notify-api.line.me/api/notify
 
         curl -X POST \
         -H "Authorization: Bearer $TOKEN" \
         -F "message=$MESSAGE " \
-        https:#notify-api.line.me/api/notify
+        https://notify-api.line.me/api/notify
         # 將執行成功的訊息記錄到日誌中
         echo -e "$(date) $MESSAGE Directory $current_dir/$directory already exists. Skipping creation." >> "$current_dir/$directory/log/Summary.log"        
     
@@ -222,7 +222,7 @@ fi
             curl -X POST \
                 -H "Authorization: Bearer $TOKEN" \
                 -F "message=$CPUalert " \
-                https:#notify-api.line.me/api/notify
+                https://notify-api.line.me/api/notify
 
             echo -e "$(date)  $CPUalert 有使用量問題須告警" >> "$current_dir/$directory/log/Summary.log"
         fi
@@ -235,7 +235,7 @@ fi
             curl -X POST \
                 -H "Authorization: Bearer $TOKEN" \
                 -F "message=$memoryalert" \
-                https:#notify-api.line.me/api/notify
+                https://notify-api.line.me/api/notify
                 echo -e "$(date)  $memoryalert 有使用量問題須告警" >> "$current_dir/$directory/log/Summary.log"
         fi
 #section 6:執行完畢清理 temp 檔案
@@ -246,7 +246,7 @@ fi
         curl -X POST \
             -H "Authorization: Bearer $TOKEN" \
             -F "message=$errorlog" \
-            https:#notify-api.line.me/api/notify
+            https://notify-api.line.me/api/notify
         echo -e "$(date)  $memoryalert 有使用量問題須告警" >> "$current_dir/$directory/log/Summary.log"        
         
     fi

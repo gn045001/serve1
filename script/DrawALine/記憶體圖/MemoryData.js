@@ -1,19 +1,25 @@
 // version: 0.1, date: 20240430, Creator: jiasian.lin
-
+// version: 0.2, date: 20240504, Creator: jiasian.lin
+//當很多資料都沒呈現敏顯得波段時就很亂
+// S
 //小作品用處 監控docker 確認 docker 狀態的網頁report 如果將以上作品放置 Openshift 或 k8s 運轉
 //順便監控我其他關於前端後端網頁的小作品運轉狀況如果未來至 K8S 或 Openshift 時
 //我的小作品下載位置
 //GitHub
+//
+//https://github.com/gn045001/serve1
 
 //Dokcer Hub
-
+//https://hub.docker.com/repository/docker/gn045001/dockerstate/tags
 
 //  pre-request  
 // [projDir] project
 //   +-- [rawDir] raw 
-//   +-- [rptDir] report => GitLabdata.json ,jenkinsbdata.json ,Jenkinsdata.json ,mongodbdata.json ,redminedata.json ,sonarqubedata.json
+//   +-- [rptDir] report 
+//=> Memory_GitLabdata.json ,Memory_jenkinsbdata.json ,Memory_Jenkinsdata.json ,Memory_mongodbdata.json ,Memory_redminedata.json ,Memory_sonarqubedata.json ,Summer.log
+//=> Memory_GitLabdata.csv ,Memory_jenkinsbdata.csv ,Memory_Jenkinsdata.csv ,Memory_mongodbdata.csv ,Memory_redminedata.csv ,Memory_sonarqubedata.csv
 //   +-- [tmpDir] temp
-//   +-- [logDir] log => Summer.log
+//   +-- [logDir] log 
 
 
 //   +--
@@ -24,6 +30,7 @@
 const fs = require('fs');
 const express = require('express');
 const mongoose = require('mongoose');
+
 
 //   +--
 //section 2:mongoDB 數據讀取
@@ -63,21 +70,27 @@ const config = {
     'Content-Type': 'application/x-www-form-urlencoded'
     }
 };
-
-
+//設定網頁的port
+const port = 2001;
 //   +--
 //section 5: Pathway Summerlog
 //   +--
 
 // log and report Pathway 的位置
 
-const Summerlog = 'report/diskreportSummer.log'
-const GitLabreport = 'report/GitLabdata.json'
-const jenkinsreport = 'report/jenkinsbdata.json'
-const mongodbreport = 'report/mongodbdata.json'
-const redminereport = 'report/redminedata.json'
-const sonarqubereport = 'report/sonarqubedata.json'
+const Summerlog = 'report/Summer.log'
+const GitLabreport = 'report/Memory_GitLabdata.json'
+const jenkinsreport = 'report/Memory_jenkinsbdata.json'
+const mongodbreport = 'report/Memory_mongodbdata.json'
+const redminereport = 'report/Memory_redminedata.json'
+const sonarqubereport = 'report/Memory_sonarqubedata.json'
 
+
+const GitLabreportcsv = 'report/Memory_GitLabdata.csv'
+const jenkinsreportcsv = 'report/Memory_jenkinsbdata.csv'
+const mongodbreportcsv = 'report/Memory_mongodbdata.csv'
+const redminereportcsv = 'report/Memory_redminedata.csv'
+const sonarqubereportcsv = 'report/Memory_sonarqubedata.csv'
 
 //   +--
 //section 6: 定義數據
@@ -133,7 +146,28 @@ app.get('/GitLaboneDaysgetData', async (req, res) => {
 
         // 輸出 JSON 檔案
         fs.writeFileSync(GitLabreport, JSON.stringify(data, null, 2));
-
+                // GitLabreport Read JSON data from file
+                fs.readFile(GitLabreport, 'utf8', (err, data) => {
+                    if (err) {
+                    console.error('Error reading JSON file:', err);
+                    return;
+                    }
+                
+                    try {
+                    // Parse JSON data
+                    const jsonData = JSON.parse(data);
+                
+                    // Convert JSON to CSV
+                    const csvData = jsonData.map(row => Object.values(row).join(',')).join('\n');
+                
+                    // Write CSV data to a file
+                    fs.writeFileSync(GitLabreportcsv, Object.keys(jsonData[0]).join(',') + '\n' + csvData);
+                
+        
+                    } catch (err) {
+                    console.error('Error parsing JSON data:', err);
+                    }
+                });
 
     } catch (err) {
         // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端
@@ -202,9 +236,8 @@ app.get('/jenkinsoneDaysgetData', async (req, res) => {
         const data = await ContainerData.find({
             container_name: "gifted_dubinsky",
             timestamp: { $gte: oneDaysAgo.toISOString() }
-        }, { timestamp: 1, memory_percentage: 1, _id: 0 });
-        
-        console.log('Data from MongoDB for Jenkins:', data); 
+        }, { timestamp: 1, memory_percentage: 1, _id: 0 });        
+
         // 將資料轉換為前端需要的格式
         const labels = data.map(item => item.timestamp);
         const memoryPercentages = data.map(item => parseFloat(item.memory_percentage));
@@ -212,8 +245,30 @@ app.get('/jenkinsoneDaysgetData', async (req, res) => {
         res.json({ labels, memoryPercentages });
 
         // 輸出 JSON 檔案
-        fs.writeFileSync(jenkinsreport, JSON.stringify(data, null, 2));
+        fs.writeFileSync(jenkinsreport, JSON.stringify(data, null, 2));        
+        
+        // jenkinreport Read JSON data from file
+        fs.readFile(jenkinsreport, 'utf8', (err, data) => {
+            if (err) {
+            console.error('Error reading JSON file:', err);
+            return;
+            }
+        
+            try {
+            // Parse JSON data
+            const jsonData = JSON.parse(data);
+        
+            // Convert JSON to CSV
+            const csvData = jsonData.map(row => Object.values(row).join(',')).join('\n');
+        
+            // Write CSV data to a file
+            fs.writeFileSync(jenkinsreportcsv, Object.keys(jsonData[0]).join(',') + '\n' + csvData);
+        
 
+            } catch (err) {
+            console.error('Error parsing JSON data:', err);
+            }
+        });
     } catch (err) {
         // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端
         console.error('Failed to retrieve data from MongoDB:', err);
@@ -290,6 +345,29 @@ app.get('/mongodboneDaysgetData', async (req, res) => {
 
         // 輸出 JSON 檔案
         fs.writeFileSync(mongodbreport, JSON.stringify(data, null, 2));
+
+             // mongodbreport Read JSON data from file
+             fs.readFile(mongodbreport, 'utf8', (err, data) => {
+                if (err) {
+                console.error('Error reading JSON file:', err);
+                return;
+                }
+            
+                try {
+                // Parse JSON data
+                const jsonData = JSON.parse(data);
+            
+                // Convert JSON to CSV
+                const csvData = jsonData.map(row => Object.values(row).join(',')).join('\n');
+            
+                // Write CSV data to a file
+                fs.writeFileSync(mongodbreportcsv, Object.keys(jsonData[0]).join(',') + '\n' + csvData);
+            
+    
+                } catch (err) {
+                console.error('Error parsing JSON data:', err);
+                }
+            });
 
     } catch (err) {
         // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端
@@ -370,6 +448,32 @@ app.get('/redmineoneDaysgetData', async (req, res) => {
 
         // 輸出 JSON 檔案
         fs.writeFileSync(redminereport, JSON.stringify(data, null, 2));
+
+        
+        // redminereport Read JSON data from file
+        fs.readFile(redminereport, 'utf8', (err, data) => {
+            if (err) {
+            console.error('Error reading JSON file:', err);
+            return;
+            }
+        
+            try {
+            // Parse JSON data
+            const jsonData = JSON.parse(data);
+        
+            // Convert JSON to CSV
+            const csvData = jsonData.map(row => Object.values(row).join(',')).join('\n');
+        
+            // Write CSV data to a file
+            fs.writeFileSync(redminereportcsv, Object.keys(jsonData[0]).join(',') + '\n' + csvData);
+        
+
+            } catch (err) {
+            console.error('Error parsing JSON data:', err);
+            }
+        });
+
+
     } catch (err) {
         // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端
         console.error('Failed to retrieve data from MongoDB:', err);
@@ -446,6 +550,30 @@ app.get('/sonarqubeoneDaysgetData', async (req, res) => {
 
         // 輸出 JSON 檔案
         fs.writeFileSync(sonarqubereport, JSON.stringify(data, null, 2));
+
+        // sonarqube Read JSON data from file
+            fs.readFile(sonarqubereport, 'utf8', (err, data) => {
+            if (err) {
+                console.error('Error reading JSON file:', err);
+                return;
+                }
+                    
+                try {
+                // Parse JSON data
+                const jsonData = JSON.parse(data);
+                    
+                // Convert JSON to CSV
+                const csvData = jsonData.map(row => Object.values(row).join(',')).join('\n');
+                    
+                // Write CSV data to a file
+                fs.writeFileSync(sonarqubereportcsv, Object.keys(jsonData[0]).join(',') + '\n' + csvData);
+                    
+            
+                } catch (err) {
+                console.error('Error parsing JSON data:', err);
+                }
+            });
+
     } catch (err) {
         // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端
         console.error('Failed to retrieve data from MongoDB:', err);
@@ -488,9 +616,14 @@ app.get('/sonarqubeoneDaysgetData', async (req, res) => {
 //   +--
 //section 7:監聽 port 3000，當伺服器啟動後輸出訊息到控制台
 //   +--
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+
+
+
+// 監聽端口
+app.listen(port, () => {
+    console.log(`App listening at http://localhost:${port}`);
 });
+
 
 //寫進Summer log日誌
 fs.appendFile(Summerlog,  `${oneDaysAgo},已執行結束`+ '\n', (err) => {

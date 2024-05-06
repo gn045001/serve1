@@ -6,11 +6,207 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+       
+    <!-- 第一張圖 -->
+    <h1>
+        GitLab Memory Usage Chart
+    </h1>
+    <canvas id="gitlabmemoryChart"></canvas>
+    <!-- 第二張圖 -->
+    <h1>
+        Jenkins Memory Usage Chart
+    </h1>
+    <canvas id="jenkinsmemoryChart"></canvas>
+
+    <!-- 第三張圖 -->
+    <h1>
+        MongoDB Memory Usage Chart
+    </h1>
+    <canvas id="mongomemoryChart"></canvas>
+    <!-- 第四張圖 -->
+    <h1>
+        Sonarqube Memory Usage Chart
+    </h1>
+    <canvas id="sonarqubememoryChart"></canvas>
+    <!-- 第五張圖 -->
+    <h1>
+        Redmine Memory Usage Chart
+    </h1>
+    <canvas id="redminememoryChart"></canvas>
+    <!-- 第六張圖 -->
+
     <h1>
         Memory data
     </h1>
     <canvas id="combinedMemoryChart"></canvas>
-    <script>
+<script>
+    //第一張圖
+    Promise.all([
+    fetch('/GitLaboneDaysgetData').then(response => response.json()),
+    ]).then(dataArray => {
+        const gitlabData = dataArray[0];
+        const labels = gitlabData.labels;
+        const gitlabMemoryPercentages = gitlabData.memoryPercentages;
+        const ctx = document.getElementById('gitlabmemoryChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                {
+                    label: 'Gitlab Memory Percentage',
+                    data: gitlabMemoryPercentages,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                    },
+
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+
+    //第二張圖
+    Promise.all([
+    fetch('/jenkinsoneDaysgetData').then(response => response.json()),
+    ]).then(dataArray => {
+        const jenkinsData = dataArray[0];
+        const labels = jenkinsData.labels;
+        const jenkinsMemoryPercentages = jenkinsData.memoryPercentages;
+        const ctx = document.getElementById('jenkinsmemoryChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                {
+                    label: 'Jenkins Memory Percentage',
+                    data: jenkinsMemoryPercentages,
+                    borderColor: 'rgba(0, 255, 0, 1)',
+                    backgroundColor: 'rgba(0, 255, 0, 1)',
+                    borderWidth: 1
+                    },
+
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+
+    //第三張圖
+    Promise.all([
+    fetch('/mongoDBoneDaysgetData').then(response => response.json()),
+    ]).then(dataArray => {
+        const mongoDBData = dataArray[0];
+        const labels = mongoDBData.labels;
+        const mongoDBMemoryPercentages = mongoDBData.memoryPercentages;
+        const ctx = document.getElementById('mongomemoryChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                {
+                    label: 'MongoDB Memory Percentage',
+                    data: mongoDBMemoryPercentages,
+                    borderColor: 'rgba(0, 0, 0, 1)',
+                    backgroundColor: 'rgba(0, 0, 0, 1)',
+                    borderWidth: 1
+                    },
+
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+
+    //第四張圖
+    Promise.all([
+    fetch('/sonarqubeoneDaysgetData').then(response => response.json()),
+    ]).then(dataArray => {
+        const sonarqubeData = dataArray[0];
+        const labels = sonarqubeData.labels;
+        const sonarqubeMemoryPercentages = sonarqubeData.memoryPercentages;
+        const ctx = document.getElementById('sonarqubememoryChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                {
+                    label: 'Sonarqube Memory Percentage',
+                    data: sonarqubeMemoryPercentages,
+                    borderColor: 'rgba(128, 0, 128, 1)',
+                    backgroundColor: 'rgba(128, 0, 128, 1)',
+                    borderWidth: 1
+                },
+
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+
+
+    //第五張圖
+
+
+    Promise.all([
+    fetch('/redmineoneDaysgetData').then(response => response.json()),
+    ]).then(dataArray => {
+        const redmineData = dataArray[0];
+        const labels = redmineData.labels;
+        const redmineMemoryPercentages = redmineData.memoryPercentages;
+        const ctx = document.getElementById('redminememoryChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                {
+                    label: 'Redmine Memory Percentage',
+                    data: redmineMemoryPercentages,
+                    borderColor: 'rgba(255, 255, 0, 1)',
+                    backgroundColor: 'rgba(255, 255, 0, 1)',
+                    borderWidth: 1
+                },
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+
         Promise.all([
             fetch('/GitLaboneDaysgetData').then(response => response.json()),
             fetch('/jenkinsoneDaysgetData').then(response => response.json()),
@@ -35,7 +231,7 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        {
+                    {
                             label: 'Gitlab Memory Percentage',
                             data: gitlabMemoryPercentages,
                             borderColor: 'rgba(255, 99, 132, 1)',
@@ -84,4 +280,5 @@
     </script>
 </body>
 </html>
+
 
