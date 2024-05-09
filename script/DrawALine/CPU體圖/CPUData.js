@@ -30,18 +30,25 @@
 //section 1:工具套件
 //   +--
 
-//工具套件
+// 引入 Node.js 的文件系統模組，用於操作文件
 const fs = require('fs');
+// 引入 Express 框架，用於建立 Web 應用程式
 const express = require('express');
+// 引入 Mongoose 模組，用於操作 MongoDB 數據庫
 const mongoose = require('mongoose');
 
 //   +--
 //section 2:mongoDB 數據讀取
 //   +--
 
+// 連接 MongoDB 數據庫
 mongoose.connect('mongodb://admin:gn045001@localhost:27017/');
+//建立DB功能
 const db = mongoose.connection;
+
+//當連線有問題時
 db.on('error', console.error.bind(console, 'connection error:'));
+//如果成功會回復onnected to MongoDB
 db.once('open', function() {
     console.log('Connected to MongoDB');
 });
@@ -49,21 +56,27 @@ db.once('open', function() {
 //   +--
 //section 3:設定資料的天數
 //   +--
-//取一天內的資料
+
+// 建立一個新的 Date 物件，表示目前的日期和時間
 const oneDaysAgo = new Date();
+
+// 將日期設定為一天前
 oneDaysAgo.setDate(oneDaysAgo.getDate() - 1);
 
+// 建立 Express 應用程式物件
 const app = express();
 
 //   +--
 //section 4:Line Notify API相關設定
 //   +--
+
 // Line Notify 功能
 const querystring = require('querystring');
 // Line Notify 存取權杖
 const accessToken = 'lbz6wRQ4qvbPQIPDQHTEiCMF2THiArWr8Utvjy0ZWG2';
 // Line Notify API 端點
 const axios = require('axios');
+// Line Notify URL
 const url = 'https://notify-api.line.me/api/notify';
 
 // 設定  Notify 的功能
@@ -73,7 +86,7 @@ const config = {
     'Content-Type': 'application/x-www-form-urlencoded'
     }
 };
-
+//設定開啟網頁的port
 const port = 2000;
 
 
@@ -82,14 +95,17 @@ const port = 2000;
 //   +--
 
 // log and report Pathway 的位置
-
+//log 的位置
 const Summerlog = 'report/Summer.log'
+
+//json 的位置
 const GitLabreport = 'report/CPU_GitLabdata.json'
 const jenkinsreport = 'report/CPU_jenkinsbdata.json'
 const mongodbreport = 'report/CPU_mongodbdata.json'
 const redminereport = 'report/CPU_redminedata.json'
 const sonarqubereport = 'report/CPU_sonarqubedata.json'
 
+//csv 的位置
 const GitLabreportcsv = 'report/CPU_GitLabdata.csv'
 const jenkinsreportcsv = 'report/CPU_jenkinsbdata.csv'
 const mongodbreportcsv = 'report/CPU_mongodbdata.csv'
@@ -102,31 +118,30 @@ const sonarqubereportcsv = 'report/CPU_sonarqubedata.csv'
 //   +-- 
 
 // 設定mongoose 取出來值的定義 containerDataSchema 
-
 const containerDataSchema = new mongoose.Schema({
-    timestamp: String,
-    container_name: String,
-    cpu_percentage: String,
+    timestamp: String, // 定義 timestamp 欄位，型別為字串
+    container_name: String,// 定義 container_name 欄位，型別為字串
+    cpu_percentage: String,// 定義 cpu_percentage 欄位，型別為字串
 });
 
-//選擇資料庫並
+// 選擇要操作的資料庫集合（collection），並指定集合名稱為 'cpustats'，使用之前定義的 containerDataSchema 作為模型結構
 const ContainerData = mongoose.model('cpustats', containerDataSchema);
+
 
 //   +--
 //section 7: 將資料回傳至 /MemoryData.html 瀏覽器中 
 //   +--
 
-// 讀取html 的結構
+// 載入HTML結構：透過Express路由設定，當用戶訪問根路徑時（'/'），將伺服器上的CPUData.html檔案發送給用戶端，用戶端將會看到該HTML頁面。
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/CPUData.html');
 });
 
-// 一天資料藉由GitLaboneDaysgetDat回傳至HTML
-//GitLab寫進Summer log日誌
+// 紀錄GitLab API 的調用：在每次調用GitLab API時，都會向Summerlog日誌中添加一條記錄，記錄調用時間及操作。
 fs.appendFile(Summerlog, `${oneDaysAgo},GitLaboneDaysgetDat要執行了`+ '\n', (err) => {
     if (err) {
         console.error('GitLaboneDaysgetDat將要執行有問題', err);
-        return;
+        return;// 返回，結束函數執行
         }
         console.log('GitLaboneDaysgetDat將要執行沒有問題')
 });
@@ -176,14 +191,17 @@ app.get('/GitLaboneDaysgetData', async (req, res) => {
         });
 
     } catch (err) {
-        // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端
+        // 如果從資料庫取得資料失敗，回傳錯誤訊息給前端，指出從 MongoDB 取得資料失敗，並顯示錯誤訊息
         console.error('Failed to retrieve data from MongoDB:', err);
+        // 回傳一個 HTTP 500 錯誤狀態碼及錯誤訊息的 JSON 物件到客戶端
         res.status(500).json({ error: 'Failed to retrieve data from MongoDB' });
         
         //   +--
         //Line Notify API相關設定
         //   +--
-        const memoryMessagelog = `mongoDB出問題`;            
+        // 設定 Line Notify 訊息內容為 "mongoDB出問題"
+        const memoryMessagelog = `mongoDB出問題`;
+        // 使用 querystring.stringify() 將訊息轉換成 URL 格式，以便後續傳送到 Line Notify API        
         const memorymessages = querystring.stringify({
             message: memoryMessagelog
         })
@@ -191,23 +209,29 @@ app.get('/GitLaboneDaysgetData', async (req, res) => {
         //發送 Line Notify 告警
         axios.post(url,memorymessages, config)
         .then(response => {
+        // 如果請求成功，印出成功訊息到控制台
         console.log('mongoDB出問題:', response.data);
+        // 向 Summerlog 檔案中寫入一條訊息
         fs.appendFile(Summerlog, 'Line發送訊息'+ '\n', (err) => {
             if (err) {
+                // 如果寫入出現錯誤，印出錯誤訊息到控制台並返回
                 console.error('Line發送訊息有問題', err);
                 return;
                 }
+                // 如果寫入成功，印出成功訊息到控制台
                 console.log('Line發送訊息沒問題')
             });
         })       
         
 
-        //寫入Summer log日誌
+        //寫入Summer log日誌,使用fs模組中的appendFile方法來向檔案中追加內容
         fs.appendFile(Summerlog, 'mongoDB不正常'+ '\n', (err) => {
+            // 如果發生錯誤，則輸出錯誤訊息到控制台
             if (err) {
                 console.error('mongoDB不正常檔案存在但是寫入有問題', err);
                 return;
                 }
+                // 如果成功寫入檔案，則輸出訊息到控制台
                 console.log('mongoDB不正常檔案存在寫入沒問題')
         });
         }
@@ -215,10 +239,12 @@ app.get('/GitLaboneDaysgetData', async (req, res) => {
 
 // 從資料庫查詢 container_name 為 gitlab 且時間戳大於等於昨天的資料
     fs.appendFile(Summerlog, `${oneDaysAgo},GitLaboneDaysgetDat執行完畢且正常`+ '\n', (err) => {
+        // 如果發生錯誤，則輸出錯誤訊息到控制台
         if (err) {
             console.error('GitLaboneDaysgetDat將要執行有問題', err);
             return;
             }
+            // 如果成功寫入檔案，則輸出訊息到控制台
             console.log('GitLaboneDaysgetDat將要執行沒有問題')
     });
 
@@ -239,6 +265,8 @@ fs.appendFile(Summerlog, `${oneDaysAgo}, jenkin狀態的mongoDB取得數據\n`, 
 app.get('/jenkinsoneDaysgetData', async (req, res) => {
     try {
 // 從資料庫查詢 container_name 為 gifted_dubinsky 且時間戳大於等於昨天的資料
+// 且timestamp大於等於一天前的資料
+// 只返回timestamp和cpu_percentage欄位，不返回_id欄位
         const data = await ContainerData.find({
             container_name: "gifted_dubinsky",
             timestamp: { $gte: oneDaysAgo.toISOString() }
@@ -293,12 +321,16 @@ app.get('/jenkinsoneDaysgetData', async (req, res) => {
         //發送 Line Notify 告警
         axios.post(url,memorymessages, config)
         .then(response => {
+            // 當成功發送時，顯示回應資料
         console.log('mongoDB出問題:', response.data);
+        // 將發送訊息的紀錄附加到日誌檔案中
         fs.appendFile(Summerlog, 'Line發送訊息'+ '\n', (err) => {
             if (err) {
+                // 如果發生錯誤，顯示錯誤訊息並返回
                 console.error('Line發送訊息有問題', err);
                 return;
                 }
+                // 如果沒有錯誤，顯示發送訊息沒問題
                 console.log('Line發送訊息沒問題')
             });
         })       
@@ -640,12 +672,13 @@ app.get('/sonarqubeoneDaysgetData', async (req, res) => {
 });
 
 //   +--
-//section 7:監聽 port 3000，當伺服器啟動後輸出訊息到控制台
+//section 8:監聽 port 2000，當伺服器啟動後輸出訊息到控制台
 //   +--
 
 
 // 監聽端口
 app.listen(port, () => {
+     // 當伺服器成功啟動後，會執行這個回呼函式
     console.log(`App listening at http://localhost:${port}`);
 });
 

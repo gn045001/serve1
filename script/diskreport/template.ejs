@@ -39,13 +39,11 @@
             </thead>
             <tbody>
                 <% dictionaries.forEach(container => { %>
-                <tr>
-                    <td><%= container.Filesystem %></td>
+                <tr><td><%= container.Filesystem %></td>
                     <td><%= container.Size %></td>
                     <td><%= container.Used %></td>
                     <td><%= container.Available %></td>
-                    <td><%= container['Use%'] %></td>
-                </tr>
+                    <td><%= container['Use%'] %></td></tr>
                 <% }) %>
             </tbody>
         </table>
