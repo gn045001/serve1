@@ -103,7 +103,7 @@ const config = {
 //section 5: 輸出HTML資料
 //   +--
 // 讀取raw的JSON 文件的内容
-const filePath = `raw/${currentDateTime}-DiskSpace.json`;
+const filePath = `raw/${currentDateTime}-ComputerStart.json`;
 
 if (fs.existsSync(filePath)) {
     
@@ -117,14 +117,14 @@ if (fs.existsSync(filePath)) {
             //寫至Summerlog中說明沒有問題
             console.log('開始整理diskreport資料')
         });
-        console.log('DiskSpace.json檔案存在，執行確認檔案存在');
+        console.log('ComputerStart.json檔案存在，執行確認檔案存在');
         //寫進Summer log日誌
-    fs.appendFile(Summerlog, '${currentDateTime}-DiskSpace.json檔案存在'+ '\n', (err) => {
+    fs.appendFile(Summerlog, `${currentDateTime}-ComputerStart.json檔案存在`+ '\n', (err) => {
         if (err) {
-            console.error('${currentDateTime}-DiskSpace.json檔案存在但是寫入有問題', err);
+            console.error(`${currentDateTime}-ComputerStart.json檔案存在但是寫入有問題`, err);
             return;
             }
-            console.log('${currentDateTime}-DiskSpace.json檔案存在寫入沒問題')
+            console.log(`${currentDateTime}-ComputerStart.json檔案存在寫入沒問題`)
         });
 
 
@@ -220,11 +220,11 @@ if (fs.existsSync(filePath)) {
 // 輸出錯誤訊息，表示寫入 CPUMessagelog.html 檔案失敗
     console.log('report/CPUMessagelog.html 寫入失敗');
 
-// 輸出錯誤訊息，表示 DiskSpace.json 檔案不存在，無法執行 CPUMessagelog 寫入，並結束程式
-    console.error('DiskSpace.json檔案不存在CPUMessagelog失敗，離開程式');
+// 輸出錯誤訊息，表示 ComputerStart.json 檔案不存在，無法執行 CPUMessagelog 寫入，並結束程式
+    console.error('ComputerStart.json檔案不存在CPUMessagelog失敗，離開程式');
 
 // 發送 POST 請求到 Line Notify API，準備要發送的訊息
-    const CPUMessagelog = `error DiskSpace.json 檔案不見須注意`;  
+    const CPUMessagelog = `error ComputerStart.json 檔案不見須注意`;  
 // 將訊息轉換成適合發送的格式          
     const CPUMessages = querystring.stringify({
         message: CPUMessagelog
@@ -233,7 +233,7 @@ if (fs.existsSync(filePath)) {
     axios.post(url,CPUMessages, config)
         .then(response => {
          // 輸出 Line Notify API 的回應訊息
-        console.log('因為DiskSpace.json資料缺少發送訊息Line發送訊息:', response.data);
+        console.log('因為ComputerStart.json資料缺少發送訊息Line發送訊息:', response.data);
         
         // 將訊息寫入 Summerlog 檔案
         fs.appendFile(Summerlog, 'Line發送訊息'+ '\n', (err) => {
@@ -246,15 +246,15 @@ if (fs.existsSync(filePath)) {
         })
         .catch(error => {
         // 輸出發送訊息到 Line Notify API 失敗的錯誤訊息
-        console.error('error DiskSpace.json 檔案不見須注意:', error.response.data);
+        console.error('error ComputerStart.json 檔案不見須注意:', error.response.data);
         
         // 將錯誤訊息寫入 Summerlog 檔案
         fs.appendFile(Summerlog, '訊息發送失敗'+ '\n', (err) => {
         if (err) {
-            console.error('error DiskSpace.json 檔案不見須注意寫輸入Summerlog成功', err);
+            console.error('error ComputerStart.json 檔案不見須注意寫輸入Summerlog成功', err);
             return;
             }
-            console.log('error DiskSpace.json 檔案不見須注意且寫輸入Summerlog失敗')
+            console.log('error ComputerStart.json 檔案不見須注意且寫輸入Summerlog失敗')
             });
         });  
 }
