@@ -57,8 +57,8 @@ db.once('open', function() {
     console.log('Connected to MongoDB');
 });
 
-// 定義了常數 PORT，用來指定伺服器的監聽埠號為 3000
-const PORT = 2000;
+// 定義了常數 PORT，用來指定伺服器的監聽埠號為 2002
+const PORT = 2002;
 
 
 //   +--
