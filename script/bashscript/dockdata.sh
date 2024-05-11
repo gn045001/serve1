@@ -20,10 +20,10 @@
 #順便監控我其他關於前端後端網頁的小作品運轉狀況如果未來至 K8S 或 Openshift 時
 #我的小作品下載位置
 #GitHub
-
+#=https://github.com/gn045001/serve1
 
 #Dokcer Hub
-
+#= https://hub.docker.com/repository/docker/gn045001/dockerstate/tags
 #我的小作品相關設定
 #docker 
 #docker stats 的相關資訊寫成JSON
