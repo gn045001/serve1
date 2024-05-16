@@ -26,6 +26,23 @@
 //   +-- [logDir] log => Summer.log
 
 
+// 我的小作品相關設定
+// 確認電腦狀況
+// docker shell script 進行執行狀態觀察
+// * * * * * . ~/.bash_profile; /home/gn045001/shellscript/dockdata.sh #取得docker stats 資料 ，第一步取得每分鐘的資料
+// 0 * * * * . ~/.bash_profile; /home/gn045001/shellscript/dockerstatus.sh #取得放置相關位置並給予 docker進行執行，第二步將資料傳出去
+// openshift 的容器藉由docker確認容器狀態 
+// Docker 進行 crontab -e 每小時 5分時執行以下需求
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/diskreport/raw/:/app/raw/ -v /home/gn045001/diskreport/report:/app/report diskreport #產生report
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockercpureport #產生report
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockermemoryreport #產生report
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/inputcpudatamongodblog:/app/log inputcpudatamongodb   #加入至DB而已
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/inputmemorydatamongodblog:/app/log inputmemorydatamongodb  #加入至DB而已
+//5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/log:/app/log dockerstats #加入至DB而已
+
+// drawalinecpuusagechart
+// docker run -p 2000:2000 -v /home/gn045001/dockerstats/report/:/app/report/ -v /home/gn045001/dockerstats/log:/app/log drawalinecpuusagechart
+
 //   +--
 //section 1:工具套件
 //   +--
@@ -42,7 +59,7 @@ const mongoose = require('mongoose');
 //   +--
 
 // 連接 MongoDB 數據庫
-mongoose.connect('mongodb://admin:gn045001@localhost:27017/');
+mongoose.connect('mongodb://admin:gn045001@192.168.50.115:27017/');
 //建立DB功能
 const db = mongoose.connection;
 
@@ -129,7 +146,7 @@ const ContainerData = mongoose.model('cpustats', containerDataSchema);
 
 
 //   +--
-//section 7: 將資料回傳至 /MemoryData.html 瀏覽器中 
+//section 7: 將資料回傳至 /CPUData.html 瀏覽器中 
 //   +--
 
 // 載入HTML結構：透過Express路由設定，當用戶訪問根路徑時（'/'），將伺服器上的CPUData.html檔案發送給用戶端，用戶端將會看到該HTML頁面。

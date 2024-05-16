@@ -10,9 +10,20 @@
 //Dokcer Hub
 //https://hub.docker.com/repository/docker/gn045001/dockerstate/tags
 
+//  pre-request  
+// [projDir] project
+//   +-- [rawDir] raw 
+//   +-- [rptDir] report 
+//   +-- [tmpDir] temp
+//   +-- [logDir] log
 
-//我的小作品相關設定
-//Docker configuration in crontab -e
+// 我的小作品相關設定
+// 確認電腦狀況
+// docker shell script 進行執行狀態觀察
+// * * * * * . ~/.bash_profile; /home/gn045001/shellscript/dockdata.sh #取得docker stats 資料 ，第一步取得每分鐘的資料
+// 0 * * * * . ~/.bash_profile; /home/gn045001/shellscript/dockerstatus.sh #取得放置相關位置並給予 docker進行執行，第二步將資料傳出去
+// openshift 的容器藉由docker確認容器狀態 
+// Docker 進行 crontab -e 每小時 5分時執行以下需求
 //5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/diskreport/raw/:/app/raw/ -v /home/gn045001/diskreport/report:/app/report diskreport #產生report
 //5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockercpureport #產生report
 //5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockermemoryreport #產生report
@@ -20,14 +31,9 @@
 //5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/inputmemorydatamongodblog:/app/log inputmemorydatamongodb  #加入至DB而已
 //5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/log:/app/log dockerstats #加入至DB而已
 
+// drawalinecpuusagechart
+// docker run -p 2000:2000 -v /home/gn045001/dockerstats/report/:/app/report/ -v /home/gn045001/dockerstats/log:/app/log drawalinecpuusagechart
 
-
-//  pre-request  
-// [projDir] project
-//   +-- [rawDir] raw 
-//   +-- [rptDir] report 
-//   +-- [tmpDir] temp
-//   +-- [logDir] log
 
 //   +--
 //section 1:工具套件
