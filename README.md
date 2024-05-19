@@ -155,3 +155,17 @@ openshiftreport.js：這是一個基於 Node.js 的應用程序，它的主要�
 
 結論
 certificateexpiredate.sh 和 openshiftreport.js 是兩個非常實用的工具，它們通過自動化的方式，幫助系統管理員高效地管理和監控證書的有效期。通過這樣的工具組合，企業可以大幅降低因證書過期而帶來的風險，確保系統的穩定運行和數據安全。
+
+## JumpServer.yaml 建立一個跳板機
+    
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: infinite-sleep-pod
+    spec:
+      containers:
+        - name: infinite-sleep-container
+          image: alpine:latest
+          command: ["/bin/sh"]
+          args: ["-c", "while true; do sleep 3600; done"]
+
