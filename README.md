@@ -21,7 +21,9 @@
   編寫一個 Shell 或 Python 腳本來監控 Docker 容器的運行狀態和硬碟空間資訊。
   使用 docker stats 和 df 命令來獲取所需數據。
   在腳本中添加代碼，將監控數據儲存到 MongoDB 中。
-
+   
+  ### Dokcer Hub 的IP
+  https://hub.docker.com/repository/docker/gn045001/dockerstate/tags
 7. 設置 Cron Job:
   使用 crontab 設置每分鐘運行一次的監控腳本。
       docker shell script 進行執行狀態觀察
@@ -90,33 +92,45 @@
     這種方式不僅提高了效率，還幫助我們及時發現並解決潛在的問題。透過Line Notify的告警通知，我們能夠第一時間得知異常情況，並迅速做出反應，保證系統的穩定運行。
     這種自動化監控方法不僅適用於個人電腦，也適用於企業級的伺服器和雲端架構。
 ### dockerstats資料夾執行加入至DB
-   每小時的第 5 分鐘執行以下指令，使用 ~/.bash_profile 設定環境變數
-   將容器的 /app/raw/ 掛載到本地目錄 /home/gn045001/dockerstats/raw/，將 /app/log 掛載到 /home/gn045001/dockerstats/inputcpudatamongodblog
-   執行 inputcpudatamongodb 容器，將資料加入至 MongoDB
-   4 5 * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/inputcpudatamongodblog:/app/log inputcpudatamongodb   #加入至DB而已
+     每小時的第 5 分鐘執行以下指令，使用 ~/.bash_profile 設定環境變數
+     將容器的 /app/raw/ 掛載到本地目錄 /home/gn045001/dockerstats/raw/，將 /app/log 掛載到 /home/gn045001/dockerstats/inputcpudatamongodblog
+     執行 inputcpudatamongodb 容器，將資料加入至 MongoDB
+     4 5 * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/inputcpudatamongodblog:/app/log inputcpudatamongodb   #加入至DB而已
+  
+    每小時的第 5 分鐘執行以下指令，使用 ~/.bash_profile 設定環境變數
+    將容器的 /app/raw/ 掛載到本地目錄 /home/gn045001/dockerstats/raw/，將 /app/log 掛載到 /home/gn045001/dockerstats/inputmemorydatamongodblog
+    執行 inputmemorydatamongodb 容器，將資料加入至 MongoDB
+    5 5 * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/inputmemorydatamongodblog:/app/log inputmemorydatamongodb  #加入至DB而已
+  
+    每小時的第 5 分鐘執行以下指令，使用 ~/.bash_profile 設定環境變數
+    將容器的 /app/raw/ 掛載到本地目錄 /home/gn045001/dockerstats/raw/，將 /app/log 掛載到 /home/gn045001/dockerstats/log
+    執行 dockerstats 容器，將資料加入至 MongoDB
+    6 5 * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/log:/app/log dockerstats #加入至DB而已
+  
+    每小時的第 5 分鐘執行以下指令，使用 ~/.bash_profile 設定環境變數
+    將容器的 /app/raw/ 掛載到本地目錄 /home/gn045001/diskreport/raw/，將 /app/report 掛載到 /home/gn045001/diskreport/report
+    執行 diskreport 容器，生成報告
 
-  每小時的第 5 分鐘執行以下指令，使用 ~/.bash_profile 設定環境變數
-  將容器的 /app/raw/ 掛載到本地目錄 /home/gn045001/dockerstats/raw/，將 /app/log 掛載到 /home/gn045001/dockerstats/inputmemorydatamongodblog
-  執行 inputmemorydatamongodb 容器，將資料加入至 MongoDB
-  5 5 * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/inputmemorydatamongodblog:/app/log inputmemorydatamongodb  #加入至DB而已
 
-  每小時的第 5 分鐘執行以下指令，使用 ~/.bash_profile 設定環境變數
-  將容器的 /app/raw/ 掛載到本地目錄 /home/gn045001/dockerstats/raw/，將 /app/log 掛載到 /home/gn045001/dockerstats/log
-  執行 dockerstats 容器，將資料加入至 MongoDB
-  6 5 * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/log:/app/log dockerstats #加入至DB而已
+### 定期監控 Docker 容器資源並加入資料庫的效率與重要性
+    每小時的第 5 分鐘執行以下指令，使用 ~/.bash_profile 設定環境變數
+    將容器的 /app/raw/ 掛載到本地目錄 /home/gn045001/report/raw/，將 /app/report 掛載到 /home/gn045001/report/report
+    執行 dockercpureport 容器，生成報告
+    5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockercpureport # 生成報告
+    
+    每小時的第 5 分鐘執行以下指令，使用 ~/.bash_profile 設定環境變數
+    將容器的 /app/raw/ 掛載到本地目錄 /home/gn045001/report/raw/，將 /app/report 掛載到 /home/gn045001/report/report
+    執行 dockermemoryreport 容器，生成報告
+    5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/report/raw/:/app/raw/ -v /home/gn045001/report/report:/app/report dockermemoryreport # 生成報告
 
-  每小時的第 5 分鐘執行以下指令，使用 ~/.bash_profile 設定環境變數
-  將容器的 /app/raw/ 掛載到本地目錄 /home/gn045001/diskreport/raw/，將 /app/report 掛載到 /home/gn045001/diskreport/report
-  執行 diskreport 容器，生成報告
 
-透過 Docker 容器定期將資料加入至資料庫，可以有效地管理和分析系統資源使用情況。
-設定定時任務，將容器資料掛載到本地目錄，再透過容器執行指令將資料加入至 MongoDB 資料庫。
-這樣的作法不僅能夠自動化資料收集和儲存，還能夠提高系統監控和資料分析的效率。
-透過這種方式，我們可以及時了解系統的運行狀況，並做出相應的優化和改進，從而提高系統的穩定性和效率。
+    生成個別的 HTML 報告，如果執行出現問題，將通過 Line Notify 顯示警告，並通過警告來確認硬碟空間或 dockdata.sh 和 dockerstatus.sh 的執行是否正常。
+    
+    透過 Docker 容器定期將資料加入至資料庫，可以有效地管理和分析系統資源使用情況。設定定時任務，將容器資料掛載到本地目錄，再透過容器執行指令將資料加入至 MongoDB 資料庫。這樣的作法不僅能夠自動化資料收集和儲存，還能夠提高系統監控和資料分析的效率。透過這種方式，我們可以及時了解系統的運行狀況，並做出相應的優化和改進，從而提高系統的穩定性和效率。
+    
+    另一方面，定期執行容器將 Docker 監控數據加入至資料庫，可以實現對系統狀態的全面追蹤。這些數據包括 CPU 和內存使用情況等重要信息，通過將其加入至資料庫，可以方便地進行後續分析和優化。同時，定期的監控和加入至資料庫的操作，也有助於提前發現系統問題，並採取相應措施，保障系統的穩定運行。這種監控和加入至資料庫的方式，對於提高系統管理效率和確保系統安全性都具有重要意義。
+    
+    透過 Docker 容器定期將 MongoDB 內的 Docker CPU 與記憶體相關資料利用圖表呈現，可以直觀地了解系統的資源使用情況。設定定時任務，將容器資料掛載到本地目錄，再透過容器執行指令將資料呈現成圖表，並使用不同的埠號對應不同的資源類型，例如 CPU 使用率和記憶體使用情況等。這樣的作法不僅能夠自動化資料呈現，還能夠提高系統監控和資料分析的效率。透過這種方式，我們可以及時了解系統資源的分配情況，並做出相應的調整，從而提高系統的運行效率和穩定性。
 
-另一方面，定期執行容器將 Docker 監控數據加入至資料庫，可以實現對系統狀態的全面追蹤。
-這些數據包括 CPU 和內存使用情況等重要信息，通過將其加入至資料庫，可以方便地進行後續分析和優化。
-同時，定期的監控和加入至資料庫的操作，也有助於提前發現系統問題，並採取相應措施，保障系統的穩定運行。
-這種監控和加入至資料庫的方式，對於提高系統管理效率和確保系統安全性都具有重要意義。
     
 
