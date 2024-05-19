@@ -41,7 +41,9 @@
 //5 * * * * . ~/.bash_profile;docker run -v /home/gn045001/dockerstats/raw/:/app/raw/ -v /home/gn045001/dockerstats/log:/app/log dockerstats #加入至DB而已
 // drawalinecpuusagechart
 // docker run -p 2000:2000 -v /home/gn045001/dockerstats/report/:/app/report/ -v /home/gn045001/dockerstats/log:/app/log drawalinecpuusagechart
-
+// docker run -p 2001:2001 -v /home/gn045001/dockerstats/report/:/app/report/ -v /home/gn045001/dockerstats/log:/app/log drawalinememoryusagechart
+// docker run -p 2002:2002  dockercpuinformationreport
+// docker run -p 2003:2003  dockermemoryinformationreport
 
 
 //   +--

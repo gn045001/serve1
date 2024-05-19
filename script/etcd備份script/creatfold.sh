@@ -43,6 +43,9 @@
 
 # drawalinecpuusagechart
 # docker run -p 2000:2000 -v /home/gn045001/dockerstats/report/:/app/report/ -v /home/gn045001/dockerstats/log:/app/log drawalinecpuusagechart
+# docker run -p 2001:2001 -v /home/gn045001/dockerstats/report/:/app/report/ -v /home/gn045001/dockerstats/log:/app/log drawalinememoryusagechart
+# docker run -p 2002:2002  dockercpuinformationreport
+# docker run -p 2003:2003  dockermemoryinformationreport
 
 # openshift 進行執行
 # 進行備份 etcd 與規劃的建立資料夾
