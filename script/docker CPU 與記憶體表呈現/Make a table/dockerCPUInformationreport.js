@@ -36,7 +36,8 @@
 
 // drawalinecpuusagechart
 // docker run -p 2000:2000 -v /home/gn045001/dockerstats/report/:/app/report/ -v /home/gn045001/dockerstats/log:/app/log drawalinecpuusagechart
-
+// docker run -p 2002:2002  dockercpuinformationreport
+// docker run -p 2002:2002  dockercpuinformationreport
 //   +--
 //section 1:工具套件
 //   +--
@@ -54,7 +55,7 @@ const mongoose = require('mongoose');
 //   +--
 
 // 連接 MongoDB 數據庫
-mongoose.connect('mongodb://admin:gn045001@localhost:27017/');
+mongoose.connect('mongodb://admin:gn045001@192.168.50.115:27017/');
 
 //建立DB功能
 const db = mongoose.connection;
