@@ -170,7 +170,7 @@ certificateexpiredate.sh 和 openshiftreport.js 是兩個非常實用的工具�
           args: ["-c", "while true; do sleep 3600; done"]
 
 
-## 測試作品的 yaml檔
+## 測試作品的mogotest.yaml檔
 
     apiVersion: v1
     kind: Service
