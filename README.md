@@ -169,3 +169,63 @@ certificateexpiredate.sh 和 openshiftreport.js 是兩個非常實用的工具�
           command: ["/bin/sh"]
           args: ["-c", "while true; do sleep 3600; done"]
 
+
+## 測試作品的 yaml檔
+
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: nginx-service
+    spec:
+      selector:
+        app: nginx
+      ports:
+        - protocol: TCP
+          port: 80
+          targetPort: 80
+    
+    ---
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name:  webservice1
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: webservice1
+          image: gn045001/openshiftdata:webservice1
+    ---
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: webservice2
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: webservice2
+          image: gn045001/openshiftdata:webservice2
+    ---
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name:  webservice3
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: webservice3
+          image: gn045001/openshiftdata:webservice3test
+    ---
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: mongo
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: mongo
+          image: gn045001/openshiftdata:mongo
+
