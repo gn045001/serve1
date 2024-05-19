@@ -68,7 +68,7 @@ oneDaysAgo.setDate(oneDaysAgo.getDate() - 1);
 //   +--
 
 // 定義了常數 PORT，用來指定伺服器的監聽埠號為 2004
-const PORT = 2004;
+const PORT = 2005;
 
 // 獲取資料庫連接的狀態
 const db = mongoose.connection;
