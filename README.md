@@ -1,5 +1,5 @@
 # 我的serve1專案
-建立一個監控 Docker 的自動化監控機制，利用 VMware 建立 Red Hat 和 OpenShift 環境。每分鐘監控 Docker 的運行狀態與硬碟空間資訊，並將其加入至 MongoDB 進行儲存。
+建立一個監控 Docker 的自動化監控機制，利用 VMware 建立 Red Hat 和 OpenShift 環境。每分鐘監控 Docker 的運行狀態與硬碟空間資訊，並將其加入至 MongoDB 進行儲存，image 執行給予 openshift 的pod 來進行執行，來進行整理資料需求。
 
 ## 系統設計方案
 1. VMware 環境: 使用 VMware 建立虛擬機運行 Red Hat 和 OpenShift。
@@ -8,23 +8,45 @@
 建立一個每分鐘監控 Docker 運行狀態和硬碟空間資訊的自動化監控機制，並將數據儲存至 MongoDB。
 
 ## 監控機制步驟
-1. 設置 VMware 環境:
-  使用 VMware 創建虛擬機以運行 Red Hat 和 OpenShift。
+1.  環境準備
 
-3. 部署 Red Hat 和 OpenShift:
-  使用 VMware 工具在虛擬機中部署 Red Hat 和 OpenShift。
+    -利用 VMware 建立 Red Hat 和 OpenShift 環境。
+    -確保已安裝 Docker、MongoDB 及相關工具。
+    
+2.監控機制
 
-5. 安裝和配置 Docker:
-  在 Red Hat 和 OpenShift 中安裝和配置 Docker。
+    -每分鐘監控 Docker 的運行狀態與硬碟空間資訊。
+    -使用 Shell 腳本收集 Docker 資料並存儲為 JSON 文件。
+    
+3.數據儲存
 
-6. 編寫監控腳本:
-  編寫一個 Shell 或 Python 腳本來監控 Docker 容器的運行狀態和硬碟空間資訊。
-  使用 docker stats 和 df 命令來獲取所需數據。
-  在腳本中添加代碼，將監控數據儲存到 MongoDB 中。
-   
-  ### Dokcer Hub 的IP
-  https://hub.docker.com/repository/docker/gn045001/dockerstate/tags
-7. 設置 Cron Job:
+    -將收集到的數據加入至 MongoDB 進行儲存。
+    
+4.自動化執行
+
+    -創建一個 Docker image，將監控腳本打包其中。
+    -將此 Docker image 部署於 OpenShift 的 pod 中，以定時執行監控任務。
+    
+5.腳本範例
+
+    -dockdata.sh: 每分鐘收集 Docker 資料並保存為 JSON 文件。
+    -dockerstatus.sh: 每小時創建資料夾以存儲收集到的數據。
+    
+6.具體步驟
+
+  VMware 設置:
+    -建立 Red Hat 和 OpenShift 環境。
+  Docker image 構建:
+    -創建 Dockerfile，將監控腳本和所需依賴打包進 Docker image 中。
+  部署到 OpenShift:
+    -使用 OpenShift 部署該 Docker image，設置定時任務以每分鐘運行一次監控腳本。
+7.改進建議
+
+    -增加日誌功能，記錄監控過程中的錯誤和異常情況。
+    -提供數據可視化界面，實時展示 Docker 的運行情況和硬碟使用狀態。
+    -設置告警機制，當監控到異常情況時，發送通知至管理員。
+
+8. 設置 Cron Job:
   使用 crontab 設置每分鐘運行一次的監控腳本。
       docker shell script 進行執行狀態觀察
    
