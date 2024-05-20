@@ -54,6 +54,25 @@
 ### 繪圖的程式碼
 利用 Diagram as Code 進行繪製
 程式碼為 \temp\diagram\diagram.py
+## 執行方法
+需要有 Docker 和 Apache 及 MySQL，並將 serve1\script\網頁作品\jiasian\database\user.sql 加入到 MySQL 中。
+### 執行docker images
+     1. docker run -p 2000:2000 -v /home/gn045001/dockerstats/report/:/app/report/ -v /home/gn045001/dockerstats/log:/app/log drawalinecpuusagechart
+     2. docker run -p 2001:2001 -v /home/gn045001/dockerstats/report/:/app/report/ -v /home/gn045001/dockerstats/log:/app/log drawalinememoryusagechart
+     3. docker run -p 2002:2002  dockercpuinformationreport
+     4. docker run -p 2003:2003  dockermemoryinformationreport
+### 執行 apache 和 My-sql來進行 
+      serve1\script\網頁作品\jiasian\index.html 
+      index.html 
+      內容:
+      1.  自我介紹
+      2.  部落格
+      3. docker CPU使用的曲線圖，執行方式:  "docker run -p 2000:2000 -v /home/gn045001/dockerstats/report/:/app/report/ -v /home/gn045001/dockerstats/log:/app/log drawalinecpuusagechart"
+      4. docker Memory使用的曲線圖，執行方式:  "docker run -p 2001:2001 -v /home/gn045001/dockerstats/report/:/app/report/ -v /home/gn045001/dockerstats/log:/app/log drawalinememoryusagechart"
+      5. docker CPU使用的圖表，執行方式:  "docker run -p 2002:2002  dockercpuinformationreport"
+      6. docker Memory使用的圖表，執行方式: "docker run -p 2003:2003  dockermemoryinformationreport"
+
+
 
 ## 執行結果
 
